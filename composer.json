@@ -10,12 +10,17 @@
             "email": "exgamer@live.ru"
         }
     ],
-  "support": {
-    "issues": "https://github.com/exgamer/yii2-core/issues",
-    "source": "https://github.com/exgamer/yii2-core"
-  },
+    "support": {
+      "issues": "https://github.com/exgamer/yii2-core/issues",
+      "source": "https://github.com/exgamer/yii2-core"
+    },
     "minimum-stability": "dev",
     "require": {
         "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "core": ""
+        }
     }
 }
