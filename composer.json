@@ -1,5 +1,5 @@
 {
-    "name": "citizenzet/yii2-core",
+    "name": "citizenzet/yii2-web-core",
     "description": "core for web",
     "type": "yii2-extension",
     "keywords": ["citizenzet","yii2","extension","core"],
