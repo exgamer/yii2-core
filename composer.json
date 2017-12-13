@@ -1,0 +1,21 @@
+{
+    "name": "citizenzet/yii2-core",
+    "description": "core for web",
+    "type": "yii2-extension",
+    "keywords": ["citizenzet","yii2","extension","core"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "citizenzet",
+            "email": "exgamer@live.ru"
+        }
+    ],
+  "support": {
+    "issues": "https://github.com/exgamer/yii2-core/issues",
+    "source": "https://github.com/exgamer/yii2-core"
+  },
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+}
