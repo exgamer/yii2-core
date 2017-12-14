@@ -93,7 +93,7 @@ abstract class ActiveRecordWithProps extends ActiveRecord
             $this->deleteProps();
             if (! parent::delete()){
                 throw new Exception(Yii::t('api','Ошибка удаления, основной модели'), 500);
-            }
+            }  
             $this->afterDeleteProps();
 
             return true;
