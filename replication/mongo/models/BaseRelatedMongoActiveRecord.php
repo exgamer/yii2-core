@@ -114,4 +114,5 @@ abstract  class BaseRelatedMongoActiveRecord extends ActiveRecord
      * returns string
      */
     public static function getRelatedModelClass(){}
+    
 }
