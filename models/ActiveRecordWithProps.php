@@ -65,6 +65,9 @@ abstract class ActiveRecordWithProps extends ActiveRecord
             if (! $value){
                 continue;
             }
+            if (is_array($value)){
+                $value = json_encode($value);
+            }
             $data[] = [
                 'id_object' => $this->id,
                 'name' => $name,
