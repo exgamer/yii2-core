@@ -102,7 +102,9 @@ abstract  class BaseRelatedMongoActiveRecord extends ActiveRecord
     public function getRelatedModel()
     {
         $modelClass = $this->getRelatedModelClass();
-        
+        if (! $modelClass){
+            throw new Exception(Yii::t('api','Не указан класс связанной модели.'), 500);
+        }
         return new $modelClass();
     }
     
@@ -111,5 +113,5 @@ abstract  class BaseRelatedMongoActiveRecord extends ActiveRecord
      * 
      * returns string
      */
-    abstract function getRelatedModelClass();
+    public static function getRelatedModelClass(){}
 }
