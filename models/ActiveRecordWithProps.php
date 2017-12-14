@@ -62,6 +62,9 @@ abstract class ActiveRecordWithProps extends ActiveRecord
         $model::deleteAll(['id_object' => $this->id]);
         $data = [];
         foreach ($props as $name=>$value) {
+            if (! $value){
+                continue;
+            }
             $data[] = [
                 'id_object' => $this->id,
                 'name' => $name,
