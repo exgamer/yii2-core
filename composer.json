@@ -22,5 +22,11 @@
         "psr-4": {
             "core\\": ""
         }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.3-dev"
+        }
     }
 }
