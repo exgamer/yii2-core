@@ -2,7 +2,7 @@
 namespace core\models;
 
 use Yii;
-use core\models\ActiveRecord;
+use core\models\TransactionalActiveRecord;
 use yii\base\Exception;
 use core\helpers\DbHelper;
 
@@ -15,7 +15,7 @@ use core\helpers\DbHelper;
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
-abstract class ActiveRecordWithProps extends ActiveRecord 
+abstract class ActiveRecordWithProps extends TransactionalActiveRecord 
 {
     public static function find()
     {
@@ -37,19 +37,12 @@ abstract class ActiveRecordWithProps extends ActiveRecord
     }
 
     /**
-     *  save base model with all properties
+     * @see \core\models\TransactionalActiveRecord
      */
-    public function save($runValidation = true, $attributeNames = null)
+    public function afterSaveModel()
     {
-        return self::getDb()->transaction(function($db) use($runValidation, $attributeNames){
-            if (! parent::save($runValidation, $attributeNames)){
-                throw new Exception(Yii::t('api','Ошибка сохранения, основной модели'), 500);
-            }
-            $this->saveProps();
-            $this->afterSaveProps();
-
-            return true;
-        });
+        $this->saveProps();
+        $this->afterSaveProps();
     }
     
     /**
@@ -84,20 +77,23 @@ abstract class ActiveRecordWithProps extends ActiveRecord
      */
     public function afterSaveProps()
     {
-        
+        $this->deleteProps();
     }
 
-    public function delete()
+    /**
+     * @see \core\models\TransactionalActiveRecord
+     */
+    public function beforeDeleteModel()
     {
-        return self::getDb()->transaction(function($db) {
-            $this->deleteProps();
-            if (! parent::delete()){
-                throw new Exception(Yii::t('api','Ошибка удаления, основной модели'), 500);
-            }  
-            $this->afterDeleteProps();
-
-            return true;
-        });
+        
+    }
+    
+    /**
+     * @see \core\models\TransactionalActiveRecord
+     */
+    public function afterDeleteModel()
+    {
+        $this->afterDeleteProps();
     }
     
     /**
