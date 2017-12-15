@@ -8,7 +8,6 @@ use yii\base\Exception;
 /**
  * Класс предназначен для репликации данных в другое место
  * 
- * 
  * @author CitizenZet <exgamer@live.ru>
  */
 abstract class ReplicatedActiveRecord extends TransactionalActiveRecord 
