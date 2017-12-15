@@ -21,7 +21,8 @@ abstract class TransactionalActiveRecord extends ActiveRecord
         return self::getDb()->transaction(function($db) use($runValidation, $attributeNames){
             $this->beforeSaveModel();
             if (! parent::save($runValidation, $attributeNames)){
-                throw new Exception(Yii::t('api','Ошибка сохранения, основной модели'), 500);
+                
+                return false;
             }
             $this->afterSaveModel();
 
@@ -55,7 +56,8 @@ abstract class TransactionalActiveRecord extends ActiveRecord
         return self::getDb()->transaction(function($db) {
             $this->beforeDeleteModel();
             if (! parent::delete()){
-                throw new Exception(Yii::t('api','Ошибка удаления, основной модели'), 500);
+                
+                return false;
             }  
             $this->afterDeleteProps();
 
