@@ -3,7 +3,7 @@ namespace core\replication\mongo\behaviors;
 
 use yii\base\Behavior;
 use yii\mongodb\ActiveRecord;
-use MongoDB\BSON\UTCDateTime;
+use core\helpers\DateHelper;
 
 /**
  * Поведение для полей даты записей из mongo
@@ -58,8 +58,7 @@ class MongoFieldsBehavior extends Behavior
             if(! $this->owner->{$attr}){
                     $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date($this->dateFormat))) );
             } else  if(is_string($this->owner->{$attr})){
-                    $value =  date($this->dateFormat,  strtotime($this->owner->{$attr}));
-                    $this->owner->{$attr} = new UTCDateTime ( \DateTime::createFromFormat($this->dateFormat, $value) );
+                    $this->owner->{$attr} = DateHelper::getMongoDate($this->owner->{$attr}, $this->dateFormat);
             }
         }
     }

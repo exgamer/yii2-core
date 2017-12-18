@@ -2,6 +2,8 @@
 
 namespace core\helpers;
 
+use MongoDB\BSON\UTCDateTime;
+
 /**
  * Вспомогательный класс для работы с датами
  *
@@ -186,5 +188,17 @@ class DateHelper
         }
         
         return $dateArray;
+    }
+    
+    /**
+     * Преобразовать дату в UTCDateTime
+     * @param string $date
+     * @param type $format
+     * @return \core\helpers\UTCDateTime
+     */
+    public static function getMongoDate($date, $format = 'Y-m-d')
+    {
+        $value =  date($format,  strtotime($date));
+        return new UTCDateTime ( \DateTime::createFromFormat($format, $value) );
     }
 }
