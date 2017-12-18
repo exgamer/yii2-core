@@ -43,7 +43,6 @@ class MongoFieldsBehavior extends Behavior
                 $this->owner->{$attr} = strtotime($this->owner->{$attr});
             }
         }
-        
     }
     
     /**
