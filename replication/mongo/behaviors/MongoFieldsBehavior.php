@@ -18,6 +18,7 @@ class MongoFieldsBehavior extends Behavior
      * @var array
      */
     public $dateAttr = [];
+    public $dateFormat = 'Y-m-d';
     
     public function events() 
     {
@@ -38,7 +39,7 @@ class MongoFieldsBehavior extends Behavior
                 if(! is_object($this->owner->{$attr})){
                     continue;
                 }
-                $this->owner->{$attr} = date('Y-m-d H:i:s', $this->owner->{$attr}->toDateTime()->getTimestamp());
+                $this->owner->{$attr} = date($this->dateFormat, $this->owner->{$attr}->toDateTime()->getTimestamp());
                 $this->owner->{$attr} = strtotime($this->owner->{$attr});
             }
         }
@@ -55,10 +56,10 @@ class MongoFieldsBehavior extends Behavior
         }
         foreach ($this->dateAttr as $attr) {
             if(! $this->owner->{$attr}){
-                    $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date('Y-m-d H:i:s'))) );
+                    $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date($this->dateFormat))) );
             } else  if(is_string($this->owner->{$attr})){
-                    $value =  date('Y-m-d H:i:s',  strtotime($this->owner->{$attr}));
-                    $this->owner->{$attr} = new UTCDateTime ( \DateTime::createFromFormat('Y-m-d H:i:s', $value) );
+                    $value =  date($this->dateFormat,  strtotime($this->owner->{$attr}));
+                    $this->owner->{$attr} = new UTCDateTime ( \DateTime::createFromFormat($this->dateFormat, $value) );
             }
         }
     }
