@@ -4,6 +4,7 @@ namespace core\replication\mongo\behaviors;
 use yii\base\Behavior;
 use yii\mongodb\ActiveRecord;
 use core\helpers\DateHelper;
+use MongoDB\BSON\UTCDateTime;
 
 /**
  * Поведение для полей даты записей из mongo
