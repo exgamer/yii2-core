@@ -43,7 +43,7 @@ class MongoFieldsBehavior extends Behavior
                     continue;
                 }
                 $this->owner->{$attr} = date($this->dateFormat, $this->owner->{$attr}->toDateTime()->getTimestamp());
-                $this->getDte();
+                $this->getDte($attr);
                 if ($this->getAsTimestamp){
                     $this->owner->{$attr} = strtotime($this->owner->{$attr});
                 }
@@ -63,13 +63,14 @@ class MongoFieldsBehavior extends Behavior
             if(! $this->owner->{$attr}){
                 $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date($this->dateFormat))) );
             } else  if(is_string($this->owner->{$attr})){
-                $this->getDte();
+                $this->getDte($attr);
                 $this->owner->{$attr} = DateHelper::getMongoDate($this->owner->{$attr}, $this->dateFormat);
             }
         }
     }
     
-    private function getDte()
+    
+    private function getDte($attr)
     {
         if ($this->getAddHrs && $this->getAddHrs > 0){
             $sec = $this->getAddHrs * 60*60;
