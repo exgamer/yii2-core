@@ -43,10 +43,7 @@ class MongoFieldsBehavior extends Behavior
                     continue;
                 }
                 $this->owner->{$attr} = date($this->dateFormat, $this->owner->{$attr}->toDateTime()->getTimestamp());
-                if ($this->getAddHrs && $this->getAddHrs > 0){
-                    $sec = $this->getAddHrs * 60*60;
-                    $this->owner->{$attr} = date("Y-m-d H:i:s", strtotime ($this->owner->{$attr}) + $sec);
-                }
+                $this->getDte();
                 if ($this->getAsTimestamp){
                     $this->owner->{$attr} = strtotime($this->owner->{$attr});
                 }
@@ -64,10 +61,19 @@ class MongoFieldsBehavior extends Behavior
         }
         foreach ($this->dateAttr as $attr) {
             if(! $this->owner->{$attr}){
-                    $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date($this->dateFormat))) );
+                $this->owner->{$attr} = new UTCDateTime (( new \DateTime (date($this->dateFormat))) );
             } else  if(is_string($this->owner->{$attr})){
-                    $this->owner->{$attr} = DateHelper::getMongoDate($this->owner->{$attr}, $this->dateFormat);
+                $this->getDte();
+                $this->owner->{$attr} = DateHelper::getMongoDate($this->owner->{$attr}, $this->dateFormat);
             }
+        }
+    }
+    
+    private function getDte()
+    {
+        if ($this->getAddHrs && $this->getAddHrs > 0){
+            $sec = $this->getAddHrs * 60*60;
+            $this->owner->{$attr} = date("Y-m-d H:i:s", strtotime ($this->owner->{$attr}) + $sec);
         }
     }
 }
