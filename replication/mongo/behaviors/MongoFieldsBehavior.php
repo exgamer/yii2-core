@@ -20,6 +20,8 @@ class MongoFieldsBehavior extends Behavior
      */
     public $dateAttr = [];
     public $dateFormat = 'Y-m-d';
+    public $getAsTimestamp = false;
+    public $getAddHrs;
     
     public function events() 
     {
@@ -41,7 +43,13 @@ class MongoFieldsBehavior extends Behavior
                     continue;
                 }
                 $this->owner->{$attr} = date($this->dateFormat, $this->owner->{$attr}->toDateTime()->getTimestamp());
-                $this->owner->{$attr} = strtotime($this->owner->{$attr});
+                if ($this->getAddHrs && $this->getAddHrs > 0){
+                    $sec = $this->getAddHrs * 60*60;
+                    $this->owner->{$attr} = date("Y-m-d H:i:s", strtotime ($this->owner->{$attr}) + $sec);
+                }
+                if ($this->getAsTimestamp){
+                    $this->owner->{$attr} = strtotime($this->owner->{$attr});
+                }
             }
         }
     }
