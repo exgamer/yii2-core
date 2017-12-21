@@ -2,7 +2,6 @@
 namespace core\analytics;
 
 use core\analytics\BaseQuery;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * Base class for long term and non dynamic analytics collect
