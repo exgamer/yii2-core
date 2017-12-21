@@ -69,7 +69,12 @@ class MongoFieldsBehavior extends Behavior
         }
     }
     
-    
+    /**
+     * TODO
+     * ЭТО костыль надо переделать
+     * при редактировании записи идет к дате -6 часов
+     * @param type $attr
+     */
     private function getDte($attr)
     {
         if ($this->getAddHrs && $this->getAddHrs > 0){
