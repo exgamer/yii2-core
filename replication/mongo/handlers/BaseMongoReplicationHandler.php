@@ -72,6 +72,9 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
      */
     public function getReplicationDataByPk(ActiveRecord $model)
     {
+        if ($model::$onlyReplica){
+            return null;
+        }
         $params = [];
         $class = $this->getReplicationModelClassName();
         $primaryKeys = $model::primaryKey();
