@@ -23,7 +23,8 @@ abstract class ReplicatedActiveRecordWithProps extends ActiveRecordWithProps
     {
         if(static::$onlyReplica){
             $this->beforeSaveModel();
-            $this->afterSaveModel();
+            $this->afterSaveProps();
+            
             return true;
         }
         

@@ -77,7 +77,7 @@ abstract class ActiveRecordWithProps extends TransactionalActiveRecord
      */
     public function afterSaveProps()
     {
-        $this->deleteProps();
+
     }
 
     /**
@@ -101,7 +101,7 @@ abstract class ActiveRecordWithProps extends TransactionalActiveRecord
      */
     public function deleteProps()
     {
-       $model::deleteAll(['id_object' => $this->id]);
+       //$model::deleteAll(['id_object' => $this->id]);
     }
     
     /**

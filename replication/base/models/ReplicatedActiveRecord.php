@@ -24,6 +24,7 @@ abstract class ReplicatedActiveRecord extends TransactionalActiveRecord
         if(static::$onlyReplica){
             $this->beforeSaveModel();
             $this->afterSaveModel();
+            
             return true;
         }
         
