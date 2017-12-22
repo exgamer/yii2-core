@@ -47,6 +47,14 @@ abstract class Query extends BaseQuery
             $isUpdate = true;
         }
         $model = $this->saveData($data, $model);
+        $this->showMessage($isUpdate, $model);
+    }
+    
+    /**
+     * Показываем сообщение
+     */
+    public function showMessage($isUpdate, $model)
+    {
         if ($isUpdate){
             echo $this->targetModelClass." UPDATING row with id = {$model->id} FOR {$model->date} ... ".PHP_EOL;
         }else{
