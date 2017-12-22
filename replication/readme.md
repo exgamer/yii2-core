@@ -3,6 +3,15 @@
  *
  * @author CitizenZet <exgamer@live.ru>
 /**
+
+/**
+ * NOTE
+ * У ReplicatedActiveRecordWithProps и ReplicatedActiveRecord есть признак $onlyReplica. который по умолчанию false
+ * от него зависит будет ли вестись запись в основную БД.
+ * Добавлен для быстрого перехода только на реплику
+ *
+/**
+
 1. Создаем класс модели описывающий документ для mongo и наследуем его от common\replication\mongo\models\base\BaseStatisticMongoActiveRecord и указываем связанную модель из пункта 3
 =========================Пример=================================================
 <?php
