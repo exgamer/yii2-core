@@ -130,7 +130,7 @@ abstract class Query extends BaseQuery
      */
     public function saveData(&$data, $model = null)
     {
-        $this->loadBaseModel($data, $model);
+        $model = $this->loadBaseModel($data, $model);
         if (! $model->save()){
             print_r($model->getErrors());
             //throw new Exception(Yii::t('api','Не удалось сохранить модель.'), 500);
