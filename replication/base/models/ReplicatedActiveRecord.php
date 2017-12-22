@@ -14,14 +14,14 @@ use yii\base\Exception;
  */
 abstract class ReplicatedActiveRecord extends TransactionalActiveRecord
 {
-    public $onlyReplica = false;
+    public static $onlyReplica = false;
     
     /**
      *  save base model with all properties
      */
     public function save($runValidation = true, $attributeNames = null)
     {
-        if($this->onlyReplica){
+        if(static::onlyReplica){
             $this->beforeSaveModel();
             $this->afterSaveModel();
             return true;

@@ -76,8 +76,36 @@ abstract class Query extends BaseQuery
             return null;
         }
         $modelClass = $this->targetModelClass;
-
+        //если у основной модели включена запись только в реплику
+        if ($modelClass::onlyReplica){
+            
+            return $this->loadBaseModel($replicationModel->attributes);
+        }
         return $this->getTargetModelById($replicationModel['id']);
+    }
+    
+    /**
+     * Заполняем основную модель данными
+     * @param array $data
+     */
+    public function loadBaseModel($data, $model = null)
+    {
+        $model = $model ? $model : new $this->targetModelClass();
+        //Считываем публичные свойства модели, т.к. согласно архитектуре работаем только с ними 
+        $props = get_object_vars($model);
+        foreach ($props as $name=>$value) {
+            // Если в $data нет свойства то пропускаем
+            if (! isset($data[$name])){
+                continue;
+            }
+            $model->{$name} = $data[$name];
+        }
+        // если указана явно дата сбора инфы то устанавливаем в модель
+        if ($this->dateTo){
+            $model->date = $this->dateTo;
+        }
+        
+        return $model;
     }
     
     /**
@@ -102,20 +130,7 @@ abstract class Query extends BaseQuery
      */
     public function saveData(&$data, $model = null)
     {
-        $model = $model ? $model : new $this->targetModelClass();
-        //Считываем публичные свойства модели, т.к. согласно архитектуре работаем только с ними 
-        $props = get_object_vars($model);
-        foreach ($props as $name=>$value) {
-            // Если в $data нет свойства то пропускаем
-            if (! isset($data[$name])){
-                continue;
-            }
-            $model->{$name} = $data[$name];
-        }
-        // если указана явно дата сбора инфы то устанавливаем в модель
-        if ($this->dateTo){
-            $model->date = $this->dateTo;
-        }
+        $this->loadBaseModel($data, $model);
         if (! $model->save()){
             print_r($model->getErrors());
             //throw new Exception(Yii::t('api','Не удалось сохранить модель.'), 500);
