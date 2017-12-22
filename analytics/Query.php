@@ -77,7 +77,7 @@ abstract class Query extends BaseQuery
         }
         $modelClass = $this->targetModelClass;
         //если у основной модели включена запись только в реплику
-        if ($modelClass::onlyReplica){
+        if ($modelClass::$onlyReplica){
             
             return $this->loadBaseModel($replicationModel->attributes);
         }

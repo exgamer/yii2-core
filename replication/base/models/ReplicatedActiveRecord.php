@@ -21,7 +21,7 @@ abstract class ReplicatedActiveRecord extends TransactionalActiveRecord
      */
     public function save($runValidation = true, $attributeNames = null)
     {
-        if(static::onlyReplica){
+        if(static::$onlyReplica){
             $this->beforeSaveModel();
             $this->afterSaveModel();
             return true;
