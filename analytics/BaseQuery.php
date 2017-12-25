@@ -55,12 +55,22 @@ abstract class BaseQuery
      */
     public function setDateFrom()
     {
-        $current_month = (int)date('m', strtotime($this->dateTo));
-        $current_year  = (int)date('Y', strtotime($this->dateTo));
+        $current_year = self::getCurrentAcademicYear($this->dateTo);
+        $this->dateFrom = $current_year."-09-01";
+    }
+    
+    /**
+     * Получить начало текущего академ года по дате
+     */
+    public static function getCurrentAcademicYear($date)
+    {
+        $current_month = (int)date('m', strtotime($date));
+        $current_year  = (int)date('Y', strtotime($date));
         if ($current_month > 0 AND $current_month < 8){
             $current_year--;
         }
-        $this->dateFrom = $current_year."-09-01";
+        
+        return $current_year;
     }
     
     /**
