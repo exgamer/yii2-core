@@ -67,6 +67,9 @@ abstract class ActiveRecordWithProps extends TransactionalActiveRecord
                 'value' => (string)$value,
             ];
         }
+        if (empty($data)){
+            return;
+        }
         if (! DbHelper::batchInsert($model, $data)){
             throw new Exception(Yii::t('api', 'Не удалось сохранить property.'));
         }
