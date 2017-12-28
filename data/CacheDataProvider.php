@@ -35,8 +35,8 @@ class CacheDataProvider extends \yii\data\ActiveDataProvider
         if (($sort = $this->getSort()) !== false) {
             $query->addOrderBy($sort->getOrders());
         }
-        
-        return \Yii::$app->db->cache(function ($db) use ($query) {
+        $db = $this->getModelDb();
+        return $db->cache(function ($db) use ($query) {
             $this->resolveRelations($query);
 
             return $query->all($db);
@@ -87,11 +87,7 @@ class CacheDataProvider extends \yii\data\ActiveDataProvider
             throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
         $query = clone $this->query;
-        $db = $this->db;
-        if($db === null){
-            $modelClass = $this->query->modelClass;
-            $db = $modelClass::getDb();
-        }
+        $db = $this->getModelDb();
         return $db->cache(function($db) use($query){
             return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*', $db);
         },3600,$this->getDependency());
@@ -100,6 +96,17 @@ class CacheDataProvider extends \yii\data\ActiveDataProvider
     public function getDependency()
     {
         return new \yii\caching\TagDependency(['tags' => $this->query->modelClass]);
+    }
+    
+    public function getModelDb()
+    {
+        $db = $this->db;
+        if($db === null){
+            $modelClass = $this->query->modelClass;
+            $db = $modelClass::getDb();
+        }
+        
+        return $db;
     }
 }
 ?>
