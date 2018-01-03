@@ -81,23 +81,6 @@ class ConstHelper
     const USER_ALLOW_REQUEST_COUNT = 100;
     #период времени для разрешенного кол-во запросов 
     const USER_ALLOW_REQUEST_PER_SECOND = 600;
-    #электронный адрес подписи писем отправлено от
-    const MAIL_FROM_EMAIL = 'noreply@bilimal.kz';
-    const MAIL_SUPPORT = 'support@bilimal.kz';
-    #статусы писем
-    const MAIL_STATUS_CREATED = 0;
-    const MAIL_STATUS_SENT = 1;
-    const MAIL_STATUS_SENT_PROBLEM = 2;
-    #типы писем
-    const MAIL_TYPE_REGISTRATION = 0;
-    const MAIL_TYPE_RESET_PASSWORD = 1;
-    const MAIL_TYPE_SUPER_ADMIN_CREDENTIAL = 2;
-    const MAIL_TYPE_DECLINE_REGISTRATION = 3;
-    const MAIL_CREDENTIAL_CREATE= 4;
-    #типы действий с письмом
-    const MAIL_ACTION_TYPE_OPEN = 0;
-    const MAIL_ACTION_TYPE_CLICK = 1;
-    const MAIL_ACTION_TYPE_DOWNLOAD = 2;
     #длина пароля
     const PASSWORD_LENGTH = 8;
     #длина логина
