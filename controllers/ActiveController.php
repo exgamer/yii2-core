@@ -2,8 +2,6 @@
 
 namespace core\controllers;
 
-use Yii;
-use yii\base\Exception;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecordInterface;
@@ -12,9 +10,7 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\filters\Cors;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
-use yii\web\ServerErrorHttpException;
 use core\models\ActiveRecord;
-use common\components\excel\ExcelGrid;
 use core\rest\Serializer;
 
 /**
@@ -35,11 +31,6 @@ class ActiveController extends \yii\rest\ActiveController
     public $deep_cache = false;
 
     public $setInstitution = true;
-    
-    public function actionInfo()
-    {
-        return (new $this->modelClass())->info();
-    }
 
     /**
      * Стандартные действия контроллера
@@ -48,15 +39,20 @@ class ActiveController extends \yii\rest\ActiveController
     public function actions() {
 
         $actions = parent::actions();
-
         unset($actions['create']);
         unset($actions['update']);
         unset($actions['delete']);
-        
-        //$actions['set-status'];
         $actions['index']['prepareDataProvider'] = [$this, 'fetchRecords'];
         $actions['view']['findModel'] = [$this, 'findModel'];
-
+        $actions['create'] = [
+            'class' => 'core\actions\CreateAction',
+        ];
+        $actions['update'] = [
+            'class' => 'core\actions\UpdateAction',
+        ];
+        $actions['delete'] = [
+            'class' => 'core\actions\DeleteAction',
+        ];
         $actions['options'] = [
             'class' => 'core\actions\OptionsAction',
         ];
@@ -182,107 +178,6 @@ class ActiveController extends \yii\rest\ActiveController
         } else {
             return $this->query;
         }
-    }
-
-    public function actionCreate()
-    {
-        \Yii::$app->cache->pause();
-        $model = new $this->modelClass();
-        $this->checkAccess($this->id, $model);
-        //$model->scenario = ActiveRecord::SCENARIO_INSERT;
-        $model->load(\Yii::$app->getRequest()->getBodyParams(), '');
-        if ($model->save()) {
-            $response = \Yii::$app->getResponse();
-            $response->setStatusCode(201);
-        } elseif (!$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
-        }
-        
-        return $model;
-    }
-
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-        $this->checkAccess($this->id, $model);
-        $model->scenario = ActiveRecord::SCENARIO_UPDATE;
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
-        if ($model->save() === false && !$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to update the object for unknown reason.');
-        }
-        
-        return $model;
-    }
-
-    public function actionDelete()
-    {
-
-        $id = \Yii::$app->request->get("id");
-        if ($id) {
-            $model = $this->findModel($id);
-            $this->checkAccess($this->id, $model);
-            if ($model->delete() === false) {
-                print_r($model->getErrors());
-                throw new ServerErrorHttpException('Failed to delete the object for unknown reason.');
-            }
-            Yii::$app->getResponse()->setStatusCode(204);
-        } else {
-            \Yii::$app->getResponse()->setStatusCode(404);
-            throw new ServerErrorHttpException('Model NOT FOUND');
-
-        }
-    }
-    
-    public function actionSetStatus($id)
-    {
-        $model = $this->findModel($id);
-        $this->checkAccess($this->id, $model);
-        $model->scenario = ActiveRecord::SCENARIO_UPDATE;
-        $model->status = Yii::$app->request->post('status');
-        if ($model->save() === false && !$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to change the objects status for unknown reason.');
-        }
-        return $model;
-    }
-
-    public function actionCount()
-    {
-        $query = $this->prepareQuery();
-        /**
-         * @var $query ActiveQuery
-         */
-        return $query->count();
-    }
-    
-    /**
-     * Экспорт данных в эксель
-     * 
-     * @return type
-     */
-    public function actionExcelExport()
-    {
-        $model = new $this->modelClass;
-        $name =  (new \ReflectionClass($model))->getShortName();
-        $dataProvider = $this->fetchRecords();
-        $filename = strtolower($name) . "-" . time();
-        if($model instanceof common\components\excel\IExcel){
-            throw new Exception('model must be instance of the IExcel');
-        }
-        $fields = $model->getExportFields();
-        $extend = $this->query->getExtendModelFieldsMap();
-        
-        $columns[] = ['class' => 'yii\grid\SerialColumn'];
-        $columns = array_merge($fields , array_values($extend));
-        
-        ExcelGrid::widget([ 
-            'dataProvider' => $dataProvider,
-            'extension'=>'xlsx',
-            'filename'=> $filename,
-            'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
-            'properties' =>[
-            ],
-            'columns' => $columns
-        ]);
     }
 
     public function behaviors()
