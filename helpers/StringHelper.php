@@ -1,4 +1,5 @@
 <?php
+
 namespace core\helpers;
 
 use core\helpers\ConstHelper;
@@ -211,7 +212,7 @@ abstract class StringHelper
     {
         return preg_split('/(?<=[a-z])(?=[A-Z])/u',$string);
     }
-    
+     
     /**
      * Выполнение файла sql
      * 
@@ -227,7 +228,7 @@ abstract class StringHelper
                 return false;
         }
         if($log) {
-            $this->_infoLine ( $filePath );
+            self::_infoLine ( $filePath );
         }
         $time = microtime ( true );
         $file = new TXFile (['path' => $filePath]);
@@ -249,12 +250,13 @@ abstract class StringHelper
                         }
                         $current = floor ( $file->tell () / 1024 );
                         if($log) {
-                            $this->_infoLine($filePath, " $current of $total KB" );
+                            self::_infoLine($filePath, " $current of $total KB" );
                         }
                         $sql .= $line . ' ';
-                        if (strpos ( $line, self::SQL_COMMAND_DELIMETER )) {
-                                $db->createCommand($sql);
-                                $command = '';
+                        if (strpos ( $line, self::SQL_COMMAND_DELIMETER ) !== false) {
+                                $command = $db->createCommand($sql);
+                                $command->execute();
+                                $sql = '';
                         }
                 }
                 $file->close ();
