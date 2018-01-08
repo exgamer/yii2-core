@@ -18,7 +18,7 @@ class CreateAction extends Action
         Yii::$app->cache->pause();
         $model = new $this->controller->modelClass();
         $this->controller->checkAccess($this->id, $model);
-        //$model->scenario = ActiveRecord::SCENARIO_INSERT;
+        $model->scenario = ActiveRecord::SCENARIO_INSERT;
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
         if ($model->save()) {
             $response = Yii::$app->getResponse();
