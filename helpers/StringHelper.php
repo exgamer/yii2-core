@@ -3,6 +3,7 @@ namespace core\helpers;
 
 use core\helpers\ConstHelper;
 use core\helpers\lib\TXFile;
+use yii\db\Connection;
 
 /**
  * Вспомогательный класс для работы со строками
@@ -211,7 +212,16 @@ abstract class StringHelper
         return preg_split('/(?<=[a-z])(?=[A-Z])/u',$string);
     }
     
-    public static function executeFile($filePath , $log = true) 
+    /**
+     * Выполнение файла sql
+     * 
+     * @param Connection $db
+     * @param string $filePath
+     * @param boolean $log
+     * @return boolean
+     * @throws \Exception
+     */
+    public static function executeSqlFile(Connection $db, $filePath , $log = true) 
     {
         if (! isset($filePath)) {
                 return false;
@@ -220,14 +230,13 @@ abstract class StringHelper
             $this->_infoLine ( $filePath );
         }
         $time = microtime ( true );
-        $pdo = new \PDO;
         $file = new TXFile (['path' => $filePath]);
         if (! $file->exists){
                 throw new \Exception ( "'$filePath' is not a file" );
         }
         try {
                 if ($file->open ( TXFile::READ ) === false){
-                        throw new Exception ( "Can't open '$filePath'" );
+                        throw new \Exception ( "Can't open '$filePath'" );
                 }
                 $total = floor ( $file->size / 1024 );
                 $sql = '';
@@ -244,7 +253,7 @@ abstract class StringHelper
                         }
                         $sql .= $line . ' ';
                         if (strpos ( $line, self::SQL_COMMAND_DELIMETER )) {
-                                $pdo->exec($sql);
+                                $db->createCommand($sql);
                                 $command = '';
                         }
                 }
