@@ -4,6 +4,7 @@ namespace core\actions;
 use Yii;
 use yii\base\Action;
 use yii\web\ServerErrorHttpException;
+use core\models\ActiveRecord;
 
 /**
  * Стандартный экшен для создания
@@ -15,8 +16,8 @@ class CreateAction extends Action
     public function run()
     {
         Yii::$app->cache->pause();
-        $model = new $this->modelClass();
-        $this->checkAccess($this->id, $model);
+        $model = new $this->controller->modelClass();
+        $this->controller->checkAccess($this->id, $model);
         $model->scenario = ActiveRecord::SCENARIO_INSERT;
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
         if ($model->save()) {

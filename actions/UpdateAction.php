@@ -4,6 +4,7 @@ namespace core\actions;
 use Yii;
 use yii\base\Action;
 use yii\web\ServerErrorHttpException;
+use core\models\ActiveRecord;
 
 /**
  * Стандартный экшен для редактирования
@@ -14,8 +15,8 @@ class UpdateAction extends Action
 {
     public function run($id)
     {
-        $model = $this->findModel($id);
-        $this->checkAccess($this->id, $model);
+        $model = $this->controller->findModel($id);
+        $this->controller->checkAccess($this->id, $model);
         $model->scenario = ActiveRecord::SCENARIO_UPDATE;
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
         if ($model->save() === false && !$model->hasErrors()) {
