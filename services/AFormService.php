@@ -4,7 +4,6 @@ namespace core\services;
 use core\services\AService;
 use yii\db\ActiveRecord;
 use core\forms\AModel;
-use common\services\base\ABaseServiceException;
 
 /**
  * Базовый Service для моделей связанных с формами
@@ -19,7 +18,6 @@ abstract class AFormService extends AService
      * @param BaseForm $form класс для работы
      * @param ActiveRecord $model модель данных - передается при редактировании
      * @return ActiveRecord
-     * @throws ABaseServiceException
      */
     public function save(AModel $form , ActiveRecord $model = null)
     {
