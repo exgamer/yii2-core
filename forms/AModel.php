@@ -8,6 +8,7 @@ use Codeception\Lib\Interfaces\ActiveRecord;
 //use common\traits\GeneralDbConnectionTrait;
 //use common\services\SystemSetting;
 use yii\web\ServerErrorHttpException;
+use core\models\ActiveRecord as AR;
 //use common\helpers\HandbookHelper;
 
 /**
@@ -28,6 +29,20 @@ abstract class AModel extends Model
     {
         parent::init();
         $this->relatedModel = $this->getRelatedModel();
+    }
+    
+    /**
+     * @see yii\base\Model
+     */
+    public function scenarios()
+    {
+        $scenarios = array_merge(parent::scenarios(),
+            [
+                AR::SCENARIO_INSERT => $this->attributes(),
+                AR::SCENARIO_UPDATE => $this->attributes()
+            ]);
+        
+        return $scenarios;
     }
     
     /**
