@@ -5,11 +5,8 @@ use Yii;
 use yii\base\Exception;
 use yii\base\Model;
 use Codeception\Lib\Interfaces\ActiveRecord;
-//use common\traits\GeneralDbConnectionTrait;
-//use common\services\SystemSetting;
 use yii\web\ServerErrorHttpException;
 use core\models\ActiveRecord as AR;
-//use common\helpers\HandbookHelper;
 
 /**
  * Базовая модель 
@@ -71,17 +68,6 @@ abstract class AModel extends Model
         return null;
     }
     
-//    public function beforeValidate()
-//    {
-//        if (parent::beforeValidate()){
-//            $this->setInstitutionId();
-//
-//            return true;
-//        }
-//        return false;
-//    }
-    
-    
     /**
      * @see app\modules\v2\forms\base\BaseForm
      * @param ActiveRecord $model если передается происходит редактирование
@@ -122,57 +108,6 @@ abstract class AModel extends Model
     {
         
     }
-//
-//    /**
-//     * основной сервис дял работы с моделью
-//     * 
-//     * @example return service;
-//     */
-//    public function getBaseService()
-//    {
-//        return $this->getBaseServiceByFormName();
-//    }
-    
-//    /**
-//     * Получение названия базового сервиса автоматически, по имени формы
-//     * ищется вхождение альясов из массива HandbookHelper::getPersonAliases()
-//     * в названии вызываемого класса
-//     * 
-//     * @return Component
-//     */
-//    private function getBaseServiceByFormName()
-//    {
-//        $reflection = new \ReflectionClass($this);
-//        $className = strtolower($reflection->getShortName());
-//        $search = str_replace('form', null, $className);
-//        $service = null;
-//        foreach (HandbookHelper::getPersonAliases() as $alias) {
-//            
-//            if(stripos($search, $alias) === false){
-//                continue;
-//            }
-//            $service = "{$alias}Service";
-//            break;
-//        }
-//        if(! $service){
-//            return null;
-//        }
-//        
-//        return Yii::$app->{$service};
-//    }
-    
-//    /** 
-//     * Устанавливает атрибут institution_id модели
-//     * если он существует
-//     */
-//    public function setInstitutionId()
-//    {
-//            if (property_exists($this, INSTITUTION_ID_FIELD)){
-//                if (SystemSetting::$_institutionId > 0 && SystemSetting::$_filter_by_institution){
-//                    $this->{INSTITUTION_ID_FIELD} = (int) SystemSetting::$_institutionId;
-//                }
-//            }
-//    }
     
     /**
      * Возвращает ошиибку сервера
