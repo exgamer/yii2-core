@@ -34,6 +34,12 @@ trait RemoteBaseActiveQueryTrait
     public $remoteData;
     
     /**
+     * Если оно заполнено то смержить эти данные 
+     * @var null|array 
+     */
+    public $localData;
+    
+    /**
      * Поиск по remote полям на обоих ресурсах
      * @deprecated
      * @var boolean 
@@ -237,19 +243,31 @@ trait RemoteBaseActiveQueryTrait
              * Если включен поиск по ремоут полям берем полученные ключи со значениями и подставляем в запрос
              */
             if ($this->isSearchByRemoteFields()){
-                $ids = array_keys($result);
-                $keyData = $this->getKeyData($ids);
-                foreach ($keyData as $attribute => $valueString) {
-                    $vArray= explode(',', $valueString);
-                    $this->andWhere([$attribute=>$vArray]);
-                    unset($vArray);
-                }
-                unset($keyData);
+                $this->setRemoteIds($result);
             }
         }
         $this->indexBy=null;
 
         return $result;
+    }
+    
+    /**
+     * Добавить в запрос id из удаленного запроса
+     * @param type $result
+     */
+    public function setRemoteIds($result = null)
+    {
+        if (! $result){
+            $result = $this->remoteData;
+        }
+        $ids = array_keys($result);
+        $keyData = $this->getKeyData($ids);
+        foreach ($keyData as $attribute => $valueString) {
+            $vArray= explode(',', $valueString);
+            $this->andWhere([$attribute=>$vArray]);
+            unset($vArray);
+        }
+        unset($keyData);
     }
     
     /**

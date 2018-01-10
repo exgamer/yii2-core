@@ -27,6 +27,7 @@ class RemoteActiveDataProvider extends ActiveDataProvider
         if (!$this->query instanceof QueryInterface) {
             throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
+        
         $query = clone $this->query;
         /**
          * Вырубаем из запроса remote fields
@@ -36,7 +37,16 @@ class RemoteActiveDataProvider extends ActiveDataProvider
          * Если есть remote поля выставляем метку для основного запроса
          */
         $this->query->setSearchByRemoteFields($query->isSearchByRemoteFields());
+        $query->beforeQuery();
+        $this->query->remoteData = $query->getData();
+        $q = new ActiveQuery($this->query->modelClass);
+        $q->where = $query->where;
+        $q->joinWith = $query->joinWith;
+        $q->on = $query->on;
+        $q->alias = $query->alias;
+        $localCount = $q->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
+        $this->query->localData = $query->getLocalData();
         
-        return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
+        return (int) $localCount;
     }
 }

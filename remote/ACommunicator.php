@@ -184,7 +184,8 @@ abstract class ACommunicator  extends Component
           CURLOPT_POSTFIELDS => $this->postfields?json_encode($this->postfields):null ,
           CURLOPT_HTTPHEADER => $this->getHeaders(),
           CURLOPT_SSL_VERIFYHOST => 0,
-          CURLOPT_SSL_VERIFYPEER => 0
+          CURLOPT_SSL_VERIFYPEER => 0,
+          CURLOPT_HEADER =>1
         );
         if(isset($_GET['backend_debug'])){
             print_r($this->getHeaders());
@@ -195,9 +196,13 @@ abstract class ACommunicator  extends Component
         curl_setopt_array($this->connection,($options + $this->option_defaults));
         // send request and wait for responce
         $data =  curl_exec($this->connection);
+        $header_size = curl_getinfo($this->connection, CURLINFO_HEADER_SIZE);
+        $header = substr($data, 0, $header_size);
+        $data = substr($data, $header_size);
         if ($data === false){
             $this->resolveCurlErrors($this->connection);
         }
+        
         if(isset($_GET['backend_debug'])){
             print_r($data);
         //echo "------------------------------------";
