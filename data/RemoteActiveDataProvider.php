@@ -6,7 +6,7 @@ use yii\db\QueryInterface;
 use yii\base\InvalidConfigException;
 use common\components\queries\RemoteBaseActiveQuery;
 use common\components\queries\MixedRemoteBaseActiveQuery;
-
+use core\queries\ActiveQuery;
 /**
  * ActiveDataProvider for RemoteActiveRecords
  * 
