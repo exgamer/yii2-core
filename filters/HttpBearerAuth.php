@@ -14,6 +14,7 @@ use common\models\person\Person;
 class HttpBearerAuth extends Base
 {
     public $userClassName = null;
+    public $universalUser = false;
     /**
      * Универсальный токен для авторизации
      */
@@ -73,7 +74,7 @@ class HttpBearerAuth extends Base
      */
     protected function getUniversalPerson($token)
     {
-        if($token != self::UNIVERSAL_TOKEN){
+        if($this->universalUser == false || $token != self::UNIVERSAL_TOKEN){
             return null;
         }
         $person = new $this->userClassName();
