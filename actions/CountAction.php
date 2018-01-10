@@ -12,7 +12,7 @@ class CountAction extends Action
 {
     public function run()
     {
-        $query = $this->prepareQuery();
+        $query = $this->controller->prepareQuery();
 
         return $query->count();
     }

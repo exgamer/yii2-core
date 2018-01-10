@@ -4,6 +4,7 @@ namespace core\actions;
 use Yii;
 use yii\base\Action;
 use yii\web\ServerErrorHttpException;
+use core\models\ActiveRecord;
 
 /**
  * экшен для изменения статуса 
@@ -14,8 +15,8 @@ class SetStatusAction extends Action
 {
     public function run($id)
     {
-        $model = $this->findModel($id);
-        $this->checkAccess($this->id, $model);
+        $model = $this->controller->findModel($id);
+        $this->controller->checkAccess($this->id, $model);
         $model->scenario = ActiveRecord::SCENARIO_UPDATE;
         $model->status = Yii::$app->request->post('status');
         if ($model->save() === false && !$model->hasErrors()) {
