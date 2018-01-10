@@ -22,6 +22,8 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
     const SCENARIO_UPDATE = 'update';
     
     const SCRNARIO_EXCEL_IMPORT = 'excel_import';
+    
+    const SCENARIO_TRANSFER = 'transfer';
 
     public function scenarios()
     {
@@ -31,7 +33,8 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
                 self::SCENARIO_INSERT => $this->attributesForSave(self::SCENARIO_INSERT),
                 self::SCENARIO_UPDATE => $this->attributesForSave(self::SCENARIO_UPDATE),
                 self::FILTER_SCENARIO => $this->filterAttributes(),
-                self::FILTER_ONE_SCENARIO => $this->filterOneAttributes()
+                self::FILTER_ONE_SCENARIO => $this->filterOneAttributes(),
+                self::SCENARIO_TRANSFER => $this->attributesForSave(self::SCENARIO_TRANSFER)
             ]);
         return $scenarios;
 
