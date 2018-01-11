@@ -84,6 +84,8 @@ abstract class BaseQuery
         do {
             $this->_execute($inputData);
         } while (! $this->isDone());
+        
+        return true;
     }
     
     /**

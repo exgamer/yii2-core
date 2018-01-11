@@ -30,6 +30,10 @@ abstract class Query extends BaseQuery
     {
         $query = new static($dateFrom, $dateTo);
         $targetModelClass = $query->targetModelClass;
+        if ($targetModelClass::$onlyReplica){
+            return $query->execute($inputData);
+        }
+        
         return $targetModelClass::getDb()->transaction(function($db) use ($query, $inputData){
             $query->execute($inputData);
 
