@@ -61,6 +61,16 @@ abstract class ReplicatedActiveRecord extends TransactionalActiveRecord
     }
 
     /**
+     * Аттрибуты по которым можно найти соответсвующую реплику
+     * 
+     * @return array|null
+     */
+    public static function replicaUniqueAttributes()
+    {
+        return null;
+    }
+    
+    /**
      * get replication handler
      */
     abstract function getReplicationHandler();
