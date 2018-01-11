@@ -75,9 +75,9 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
         $params = [];
         $class = $this->getReplicationModelClassName();
         $attrs = $model::replicaUniqueAttributes();
-        if ($attrs){
-            foreach ($attrs as $name => $value) {
-                $params[$name] = self::validateMongoValue($name, $model->{$name}, $model);
+        if ($attrs && is_array($attrs)){
+            foreach ($attrs as $attribute) {
+                $params[$attribute] = self::validateMongoValue($attribute, $model->{$attribute}, $model);
             }
         }else{
             $primaryKeys = $model::primaryKey();
