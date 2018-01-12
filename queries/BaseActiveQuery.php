@@ -87,7 +87,7 @@ class BaseActiveQuery extends ActiveQuery
      * @param type $attr_name
      * @return boolean
      */
-    private function checkAttribute($attr_name)
+    public function checkAttribute($attr_name)
     {
         if (in_array($attr_name, ((new $this->modelClass)->attributes()))){
            return true;
