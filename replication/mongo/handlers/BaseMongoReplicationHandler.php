@@ -72,18 +72,13 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
      */
     public function getReplicationData(ActiveRecord $model)
     {
-        $params = [];
         $class = $this->getReplicationModelClassName();
-        $attrs = $model::replicaUniqueAttributes();
-        if ($attrs && is_array($attrs)){
-            foreach ($attrs as $attribute) {
-                $params[$attribute] = self::validateMongoValue($attribute, $model->{$attribute}, $model);
-            }
-        }else{
+        $params = $model->uniqueSearchParams();
+        if (empty($params)){
             $primaryKeys = $model::primaryKey();
             if (is_array($primaryKeys)){
                 foreach ($primaryKeys as $primaryKey) {
-                    $params[$primaryKey] = self::validateMongoValue($primaryKey, $model->{$primaryKey}, $model);
+                    $params[$primaryKey] = self::validateMongoValuebyScheme($primaryKey, $model->{$primaryKey}, $model);
                 }
             }
         }
@@ -94,7 +89,7 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
     }
     
     /**
-     * validates attributes value by type for mongo
+     * validates attributes value by type for mongo with rules
      * 
      * @param string $attribute
      * @param maed $value
@@ -102,7 +97,44 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
      * @return mixed
      * @throws Exception
      */
-    public static function validateMongoValue($attribute, $value, $model)
+    public static function validateMongoValueByRules($attribute, $value, $model)
+    {       
+        $rules = $model->rules();
+        $type = 'string';
+        foreach ($rules as $rule) {
+            if (is_array($rule[0])){
+                if (in_array($attribute, $rule[0])){
+                    $type = $rule[1];
+                    break;
+                }
+            }else{
+                if ($rule == $attribute){
+                    $type = $rule[1];
+                    break;
+                }
+            }
+        }
+        switch ($type) {
+            case 'integer':
+
+                return (int)$value;
+                
+            default :
+
+                return (string)$value;
+        }
+    }
+    
+    /**
+     * validates attributes value by type for mongo with scheme
+     * 
+     * @param string $attribute
+     * @param maed $value
+     * @param AR $model
+     * @return mixed
+     * @throws Exception
+     */
+    public static function validateMongoValuebyScheme($attribute, $value, $model)
     {       
         $schema = $model::getTableSchema();
         $columnsFull=$schema->columns;

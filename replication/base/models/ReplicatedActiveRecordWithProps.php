@@ -61,11 +61,20 @@ abstract class ReplicatedActiveRecordWithProps extends ActiveRecordWithProps
     }
 
     /**
-     * Аттрибуты по которым можно найти соответсвующую реплику
+     * Пареметры для поиска реплики
+     * 
+     *  пример дял монго
+     *   return [
+     *       'institution_id'=>(int)$this->institution_id,
+     *       'date'=>[
+     *           '$gte' => new UTCDateTime (( new \DateTime (date('Y-m-d H:i:s' , strtotime($this->date." 00:00:00"))))),
+     *           '$lt' => new UTCDateTime (( new \DateTime (date('Y-m-d H:i:s' , strtotime($this->date." 00:00:00" . " +1 days")))))
+     *       ]
+     *   ];
      * 
      * @return array|null
      */
-    public static function replicaUniqueAttributes()
+    public function uniqueSearchParams()
     {
         return null;
     }
