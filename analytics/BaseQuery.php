@@ -28,7 +28,7 @@ abstract class BaseQuery
     public $dateFrom;
     public $dateTo;
     public $subQueries = [];
-    public $queriesNameSpacePath = 'console\analytics\queries';
+    public $queriesNameSpacePath = 'console\modules\analytics\queries';
 
     function  __construct($dateFrom = null, $dateTo = null, $subQueries = null, &$inputData = null)
     {
@@ -114,7 +114,7 @@ abstract class BaseQuery
         foreach ($dataArray as $data) {
             $isUpdate = false;
             $this->prepareData($data);
-            $this->executeSubQueries($inputData);
+            $this->executeSubQueries($data);
             $this->processData($data, $inputData);
             $this->finishProcess($data, $inputData);
         }
@@ -129,7 +129,8 @@ abstract class BaseQuery
             return;
         }
         foreach ($this->subQueries as $queryClass) {
-            $query = new $this->$queriesNameSpacePath.'\\'.$queryClass($this->dateFrom, $this->dateTo, null, $inputData);
+            $class = $this->queriesNameSpacePath.'\\'.$queryClass;
+            $query = new $class($this->dateFrom, $this->dateTo, null, $inputData);
             $query->execute($inputData);
         }
     }
