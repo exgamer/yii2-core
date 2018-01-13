@@ -443,5 +443,15 @@ trait RemoteBaseActiveQueryTrait
     {
         return new $this->modelClass();
     }
+    
+    public function setRemoteActiveRecordClass($remoteActiveRecordClass)
+    {
+        $this->remoteActiveRecordClass = $remoteActiveRecordClass;
+    }
+    
+    public function setSplittedRemoteActiveRecordClass($splittedRemoteActiveRecordClass)
+    {
+        $this->splittedRemoteActiveRecordClass = $splittedRemoteActiveRecordClass;
+    }
 }
 
