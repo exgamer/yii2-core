@@ -4,8 +4,6 @@ namespace core\traits;
 use Yii;
 use yii\base\Exception;
 use core\remote\ACommunicator;
-use common\models\base\SplittedBaseActiveRecord;
-use common\models\base\RemoteBaseActiveRecord;
 use yii\web\Request;
 
 /**
@@ -16,6 +14,10 @@ use yii\web\Request;
  */
 trait RemoteBaseActiveQueryTrait
 {
+    public $remoteActiveRecordClass = 'core\models\RemoteBaseActiveRecord';
+    
+    public $splittedRemoteActiveRecordClass = 'core\models\SplittedBaseActiveRecord';
+    
     protected $remoteWhere=[];
     
     /**
@@ -170,7 +172,7 @@ trait RemoteBaseActiveQueryTrait
             
             #TODO для совместимости не удаляем поля из поиска локалоьной модели, т.к. данные могут быть и в ней
             #если модель смешанная и отключен поиск по обоим ресурсам , то удаляем из основного запроса лишние условия (исключение поле ID)
-            if (! $this->doubleSearch && in_array($cleanKey, $model->getRemoteModelFieldsMap()) && $model instanceof RemoteBaseActiveRecord && $cleanKey != ID_FIELD){
+            if (! $this->doubleSearch && in_array($cleanKey, $model->getRemoteModelFieldsMap()) && $model instanceof $this->remoteActiveRecordClass && $cleanKey != ID_FIELD){
                 $this->setSearchByRemoteFields(true);
                 if ($parentKey){
                     unset($this->where[$parentKey][$key]);
@@ -182,7 +184,7 @@ trait RemoteBaseActiveQueryTrait
                 }
             }
             #если модель не SplittedBaseActiveRecord или не RemoteBaseActiveRecord то это безобразие
-            if (! $model instanceof SplittedBaseActiveRecord && ! $model instanceof RemoteBaseActiveRecord){
+            if (! $model instanceof $this->splittedRemoteActiveRecordClass && ! $model instanceof $this->remoteActiveRecordClass){
                 throw new Exception(Yii::t('api', 'Алярм модель должна быть наследником RemoteBaseActiveRecord или SplittedBaseActiveRecord!'));
             }
         } 
@@ -218,7 +220,7 @@ trait RemoteBaseActiveQueryTrait
             /**
              * Если это сплит модель, и пдс вернул ничего, то ищем в локальной бд
              */
-            if ($model instanceof SplittedBaseActiveRecord){
+            if ($model instanceof $this->splittedRemoteActiveRecordClass){
                 foreach ($this->remoteWhere as $attr=>$value) {
                     if ($model->hasAttribute($attr)){
                         $this->andWhere([$attr=>$value]);
@@ -285,7 +287,7 @@ trait RemoteBaseActiveQueryTrait
             return $localData;
         }
         #если модель SplittedBaseActiveRecord просто мерджим данные
-        if ($model instanceof SplittedBaseActiveRecord){
+        if ($model instanceof $this->splittedRemoteActiveRecordClass){
             return array_merge($localData, $remoteData);
         }
         #иначе обрабатываем
