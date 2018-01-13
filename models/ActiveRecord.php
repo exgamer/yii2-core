@@ -4,6 +4,7 @@ namespace core\models;
 
 use core\interfaces\Filterable;
 use core\queries\ActiveQuery;
+use core\helpers\StringHelper;
 use Yii;
 
 /**
@@ -24,7 +25,35 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
     const SCRNARIO_EXCEL_IMPORT = 'excel_import';
     
     const SCENARIO_TRANSFER = 'transfer';
+    
+    /**
+     * Масссив для расширения полей возврата из ответа
+     * получается из ActiveQuery
+     * 
+     * @var array
+     */
+    protected $extendModelFieldsMap = [];
 
+    /**
+     * Утанавливает расширяющие поля
+     * 
+     * @param array $array
+     */
+    public function setExtendModelFieldsMap($array)
+    {
+        $this->extendModelFieldsMap = $array;
+    }
+    
+    /**
+     * Получение массива расширяющих полей
+     * 
+     * @return array
+     */
+    public function getExtendModelFieldsMap()
+    {
+        return $this->extendModelFieldsMap;
+    }
+    
     public function scenarios()
     {
 
@@ -248,19 +277,188 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
         return [];
     }
 
+    /**
+     * Обработка входящих параметров запроса
+     * Добавляем в запрос аттрибуты? которые не являются объявленными переменными и которые указаны в методе filterAttributes()
+     * @param type $query
+     */
     public function applyFilter(&$query)
     {
+        $variables = get_object_vars($this);
+        $except = array_keys($variables);
+        $include = $this->filterAttributes();
         foreach ($this->attributes as $key => $value) {
-            if ($value != null) {
-                $query->andWhere([
-                    $key => $value
-                ]);
+            if ($value == null || $value == "" || in_array($key, $except)){
+                continue;
             }
+            if (! in_array($key, $include)){
+                continue;
+            }
+            $query->andWhere([
+                $query->alias . "." . $key => $value
+            ]);
         }
     }
 
     public function applyFilterOne(&$query)
     {
 
+    }
+    
+    /**
+     * получаем связь и закидываем ее в переменную с установкой своего ключа
+     * @param string $attribute_name - переменная в которую закидываем связь
+     * @param string $field_name - поле которое будет ключем
+     * @param array $records - записи связи
+     * @param boolean $is_multi - содержит ли ключ вложенные массивы или один массив 
+     */
+    public function relationToCustomField($attribute_name, $field_name, $records, $is_multi=false)
+    {
+        $this->{$attribute_name}=[];
+        foreach($records as $r){
+                if ($is_multi){
+                    $this->{$attribute_name}[$r->{$field_name}][]=$r;
+                }else{
+                    $this->{$attribute_name}[$r->{$field_name}]=$r;
+                }
+        }
+    }
+    
+    /**
+     * Превращает связь в ассоциативный массив где одно поле будет ключом а другое значением
+     * @param type $attribute_name - переменная в которую закидываем связь
+     * @param type $key_field_name - поле которое будет ключем
+     * @param type $value_field_name - поле которое будет значением
+     * @param type $records - записи связи
+     * @param type $is_multi - содержит ли ключ вложенные массивы или один массив 
+     */
+    public function relationToAssocArray($attribute_name, $key_field_name,$value_field_name, $records, $is_multi=false , &$item = null)
+    {
+        $this->{$attribute_name}=[];
+        foreach($records as $r){
+                /**
+                 * Приводим массив к объекту чтобы вытащить данные
+                 */
+                $r=(object)$r;
+                if ($is_multi){
+                    $this->{$attribute_name}[$r->{$key_field_name}][]=$r->{$value_field_name};
+                }else{
+                    $this->{$attribute_name}[$r->{$key_field_name}]=$r->{$value_field_name};
+                }
+        }
+        $item = $this->{$attribute_name};
+    }
+    
+    /**
+     * Возвращает транслит заголовка
+     * 
+     * @param mixed $field
+     * @return string
+     */
+    public function getTranslitCaption()
+    {
+        $result = $field = $this->{CAPTION_FIELD};
+        if(is_array($field)){
+            $result = isset($field['ru']) ? $field['ru'] : reset($field);
+        }
+        
+        return StringHelper::translit($result);
+    }
+    
+    /**
+     * @see common\interfaces\IBatch
+     * @return array
+     */
+    public function excludeAttrMap()
+    {
+        return [
+        ];
+    }
+    
+    /**
+     * @see common\interfaces\IBatch
+     * @param array $columns
+     * @return mixed
+     */
+    public function excludeAttr(&$columns)
+    {
+        if(! $columns || !is_array($columns)){
+            return null;
+        }
+        $excludeMap = $this->excludeAttrMap();
+        foreach ($excludeMap as $item) {
+            if (isset($columns[$item])){
+                unset($columns[$item]);
+            }
+        }
+    }
+    
+    /**
+     * @see common\interfaces\IBatch
+     * @param array $attributes
+     * @return array
+     */
+    public function clearEmptyAttr($attributes)
+    {
+            return  array_filter (
+                            $attributes ,
+                            function($key){
+                                    if($key !== null && $key !== ""){
+                                            return true;
+                                    }
+                            }
+            );
+    }
+
+    
+    /**
+     * метод для валидации полей которые могут прилететь в виде массива? строки которая разделена запятой или просто значение
+     * например person_id может быть просто значение, может быть массивом значений или person_id,person_id,person_id
+     * @param type $attribute
+     * @param type $params
+     * @return boolean
+     */
+    public function validateVariativeField($attribute, $params)
+    {
+        $validatorClass = $params['validatorClass'];
+        $validator = new $validatorClass();
+        if (isset($params['integerOnly'])){
+            $validator->integerOnly=true;
+        }
+        if (is_array($this->{$attribute})){
+            foreach ($this->{$attribute} as $val) {
+                if (! $validator->validate($val)){
+                    $this->addError($attribute,Yii::t('api', "Неверное значение = ".$val));
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        if(stristr($this->{$attribute}, ',')){
+            $result = null;
+            $array= explode(',', $this->{$attribute});
+            foreach ($array as $value) {
+                if (! $validator->validate($value)){
+                    $this->addError($attribute,Yii::t('api', "Неверное значение = ".$val));
+                    return false;
+                }
+                
+                $result[] = $value;
+            }
+            $this->{$attribute} = $result;
+            
+            return true;
+        }
+        
+
+
+        if (! $validator->validate($this->{$attribute})){
+            $this->addError($attribute,Yii::t('api', "Неверное значение = ".$this->{$attribute}));
+            return false;
+        }
+
+        return true;
     }
 }
