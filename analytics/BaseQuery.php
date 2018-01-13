@@ -116,6 +116,7 @@ abstract class BaseQuery
             $this->prepareData($data);
             $this->executeSubQueries($inputData);
             $this->processData($data, $inputData);
+            $this->finishProcess($data, $inputData);
         }
         $this->currentPage++;
         
@@ -208,6 +209,16 @@ abstract class BaseQuery
         return $this->totalCount;
     }
 
+    /**
+     * Действия после завершения операции
+     * @param type $data
+     * @param type $inputData
+     */
+    public function finishProcess(&$data, &$inputData = null)
+    {
+        
+    }
+    
     /**
      * returns array of prepared data
      * вносим необходимые изменения в данные
