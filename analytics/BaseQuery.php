@@ -13,6 +13,8 @@ use yii\base\Exception;
  * @property integer $currentPage - current page
  * @property date    $dateFrom    - начало периода сбора инфы
  * @property date    $dateTo      - конец периода сбора инфы
+ * @property array   $subQueries  - массив запросов которы нужно выполнить в ходе обработки
+ * @property string  $queriesNameSpacePath  - namespace место где лежат query
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
@@ -25,10 +27,15 @@ abstract class BaseQuery
     public $currentPage = 0;
     public $dateFrom;
     public $dateTo;
+    public $subQueries = [];
+    public $queriesNameSpacePath = 'console\analytics\queries';
 
-    function  __construct($dateFrom = null, $dateTo = null)
+    function  __construct($dateFrom = null, $dateTo = null, $subQueries = null, &$inputData = null)
     {
         $this->setPeriod($dateFrom, $dateTo);
+        if ($subQueries && is_array($subQueries)){
+            $this->subQueries = $subQueries;
+        }
     }
     
     /**
@@ -107,6 +114,7 @@ abstract class BaseQuery
         foreach ($dataArray as $data) {
             $isUpdate = false;
             $this->prepareData($data);
+            $this->executeSubQueries($inputData);
             $this->processData($data, $inputData);
         }
         $this->currentPage++;
@@ -114,6 +122,17 @@ abstract class BaseQuery
         return true;
     }
 
+    public function executeSubQueries(&$inputData)
+    {
+        if (! $this->subQueries || !is_array($this->subQueries)){
+            return;
+        }
+        foreach ($this->subQueries as $queryClass) {
+            $query = new $this->$queriesNameSpacePath.'\\'.$queryClass($this->dateFrom, $this->dateTo, null, $inputData);
+            $query->execute($inputData);
+        }
+    }
+    
     /**
      * get db connection
      * 
