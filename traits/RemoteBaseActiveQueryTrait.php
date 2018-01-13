@@ -6,9 +6,7 @@ use yii\base\Exception;
 use core\remote\ACommunicator;
 use common\models\base\SplittedBaseActiveRecord;
 use common\models\base\RemoteBaseActiveRecord;
-use common\services\SystemSetting;
 use yii\web\Request;
-use \yii\db\Connection;
 
 /**
  * Базовые методы для remoteactivequery
