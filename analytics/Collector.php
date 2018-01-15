@@ -15,11 +15,13 @@ abstract class Collector
     public $queryClass;
     public $dateFrom;
     public $dateTo;
+    public $queries;
 
-    function  __construct($dateFrom = null, $dateTo = null)
+    function  __construct($dateFrom = null, $dateTo = null, $queries = [])
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
+        $this->queries = $queries;
     }
     
     /**
@@ -31,6 +33,6 @@ abstract class Collector
     {
         $queryClass = $this->queryClass;
         
-        return $queryClass::query($this->dateFrom, $this->dateTo);
+        return $queryClass::query($this->dateFrom, $this->dateTo, $this->queries);
     }
 }

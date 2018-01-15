@@ -26,9 +26,9 @@ abstract class Query extends BaseQuery
      * @param array $inputData
      * @return type
      */
-    public static function query($dateFrom = null, $dateTo = null, &$inputData = null)
+    public static function query($dateFrom = null, $dateTo = null, $subQueries = null, &$inputData = null)
     {
-        $query = new static($dateFrom, $dateTo);
+        $query = new static($dateFrom, $dateTo, $subQueries, $inputData);
         $targetModelClass = $query->targetModelClass;
         if ($targetModelClass::$onlyReplica){
             return $query->execute($inputData);

@@ -19,6 +19,12 @@ abstract class BaseCollectorController extends BaseCommandController
      * @var string / null
      */
     public $collector = null;
+    
+    /**
+     * Подключаемые подзапросы
+     * @var string 
+     */
+    public $queries = null;
     /**
      * начало периода сбора
      * @var date
@@ -37,11 +43,17 @@ abstract class BaseCollectorController extends BaseCommandController
      */
     protected $collectorList = [];
     
+    /**
+     * Списко подзапросов
+     * @var array
+     */
+    protected $queryList = [];
+    
     public $collectorsNamespacePath = 'console\modules\analytics\collectors';
     
     public function options($actionID)
     {
-        return ['collector','dateFrom','dateTo'];
+        return ['collector','dateFrom','dateTo','queries'];
     }
     
     /**
@@ -61,9 +73,10 @@ abstract class BaseCollectorController extends BaseCommandController
      * Запуск сборщика
      * 
      * @param string $collector
+     * @param string $queries
      * @return boolean
      */
-    protected function runCollector($collector)
+    protected function runCollector($collector, $queries = null)
     {
         $className = StringHelper::getClassNameWithoutNamespace($collector);
         if($className){
@@ -75,7 +88,10 @@ abstract class BaseCollectorController extends BaseCommandController
             
             return false;
         }
-        $model = new $collectorClass($this->dateFrom, $this->dateTo);
+        if ($this->queries){
+            $this->queryList = explode(',', $this->queries);
+        }
+        $model = new $collectorClass($this->dateFrom, $this->dateTo, $this->queryList);
         $this->outputSuccess(Yii::t('console','{collector} запущен...', ['collector' => $collector]));
         if (! $model->collect()) {
             VarDumper::dump($model->getErrors());
