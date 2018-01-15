@@ -54,15 +54,16 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
         $attrs = $model->attributes;
         $props = get_object_vars($model);
         $data = array_merge($attrs, $props);
-        //TODO сделать настройку чтобы указывать аттрибуты которые не нужно обновлять, если передано пустое значение
-        $data = array_filter (
-                        $data ,
-                        function($key){
-                                if($key !== null && $key !== ""){
-                                        return true;
-                                }
-                        }
-        );
+        if ($model::$ignoreEmptyValuesOnUpdate){
+            $data = array_filter (
+                            $data ,
+                            function($key){
+                                    if($key !== null && $key !== ""){
+                                            return true;
+                                    }
+                            }
+            );
+        }
         $replica->attributes = $data;
         $primaryKeys = $model::primaryKey();
         if (! is_array($primaryKeys) || count($primaryKeys) == 0){

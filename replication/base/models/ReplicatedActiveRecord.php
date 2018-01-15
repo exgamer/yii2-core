@@ -9,12 +9,14 @@ use yii\base\Exception;
  * Класс предназначен для репликации данных в другое место
  * 
  * @property boolean $onlyReplica - если true то сохраняем только реплику
+ * @property boolean $ignoreEmptyValuesOnUpdate - если true то при редактировании пустые атрибуты не будут онбовляться
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
 abstract class ReplicatedActiveRecord extends TransactionalActiveRecord
 {
     public static $onlyReplica = false;
+    public static $ignoreEmptyValuesOnUpdate = false;
     
     /**
      *  save base model with all properties
