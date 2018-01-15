@@ -44,18 +44,41 @@ trait StandardRulesTrait
     }
       
     /**
-     * Возвращает метку состояния объекта
+     * Возвращает метку состояние записи
      * 
      * @return string
      */
     public function getStatusLabel()
     {
-        $ar = self::getStatusArray();
-        if(! isset($ar[$this->status])){
+        return self::getLabelByArray($this->status, 'getStatusArray');
+    }
+    
+    /**
+     * Возвращает метку состояния удаления записи
+     * 
+     * @return string
+     */
+    public function getIsDeletedLabel()
+    {
+        return self::getLabelByArray($this->is_deleted, 'getBooleanArray');
+    }
+
+    /**
+     * Возвращает метку состояния объекта
+     * 
+     * @param string $key  - ключ массива
+     * @param string $array_fn  - функция возврата массива
+     * 
+     * @return string
+     */
+    private static function getLabelByArray($key, $array_fn)
+    {
+        $list = self::{$array_fn}();
+        if(! isset($list[$key])){
             return null;
         }
         
-        return $ar[$this->status];
+        return $list[$key];
     }
     
     /**
@@ -69,6 +92,19 @@ trait StandardRulesTrait
             ConstHelper::STATUS_CREATED => Yii::t('common', 'Новый'),
             ConstHelper::STATUS_ACTIVE => Yii::t('common', 'Активный'),
             ConstHelper::STATUS_LOCKED => Yii::t('common', 'Заблокированый'),
+        ];
+    }
+    
+    /**
+     * Массив буленовских значений
+     * 
+     * @return array
+     */
+    public static function getBooleanArray()
+    {
+        return [
+            0 => Yii::t('common', 'Нет'),
+            1 => Yii::t('common', 'Да'),
         ];
     }
 }
