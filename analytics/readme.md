@@ -10,9 +10,10 @@
 namespace console\modules\analytics\queries;
 
 use yii\helpers\ArrayHelper;
+use yii\db\Connection;
 use core\analytics\MongoQuery;
 use console\modules\analytics\queries\traits\InstitutionQueryAdditionalDataTrait;
-use console\modules\analytics\queries\traits\BilimalOriginDbConnectionTrait;
+use console\modules\analytics\queries\traits\BilimalGeneralDbConnectionTrait;
 
 /**
  * Base class for long term and non dynamic analytics collect
@@ -21,12 +22,14 @@ use console\modules\analytics\queries\traits\BilimalOriginDbConnectionTrait;
  */
 class InstitutionQuery extends MongoQuery
 {
-    use BilimalOriginDbConnectionTrait;
+    use BilimalGeneralDbConnectionTrait;
     use InstitutionQueryAdditionalDataTrait;
     
     public $targetModelClass = 'common\models\analytics\organization\Institution';
     public $targetReplicationModelClass = 'common\replication\mongo\models\organization\Institution';
     
+    public $subQueries = ['DivisionQuery'];
+        
     /**
      * @see \console\modules\analytics\collectors\base\BaseQuery
      */
@@ -36,12 +39,40 @@ class InstitutionQuery extends MongoQuery
         $data['institution_type'] = $data['type'];
         $data['parent_institution_id'] = $data['parent_id'];
         $data['language'] = ArrayHelper::toPhpArray($data['language']);
-        $this->getDivisionInfo($data['institution_id'], $data);
-        
-        print_r($data);
+        //$institution_db_connection = $this->getInstitutionDbConnection($data);
+        $data['db_connection'] = $this->getInstitutionDbConnection($data);
+        //$this->getDivisionInfo($data['institution_id'], $institution_db_connection,  $data);
+        //$institution_db_connection->close();
+        //print_r($data);
     }
     
-
+    /**
+    * @see \console\modules\analytics\collectors\base\BaseQuery
+    */
+    public function finishProcess(&$data, &$inputData = null)
+    {
+        //TODO закрыть коннекты
+        $data['db_connection']->close();
+    }
+    
+    /**
+     * Получить Db connection организации
+     * @param array $data
+     * @return Connection
+     */
+    public function getInstitutionDbConnection($data)
+    {
+        $domain = ArrayHelper::getValue($data, 'domain', 'db.verter.vpn');
+        $dbName = ArrayHelper::getValue($data, 'db_name', 'dev_bilimal');
+        $institution_db_connection = new Connection();
+        $institution_db_connection->dsn = "pgsql:host={$domain};dbname={$dbName}";
+        $institution_db_connection->username = ArrayHelper::getValue($data, 'db_user', 'bilimal');
+        $institution_db_connection->password = ArrayHelper::getValue($data, 'db_password', 'bilimal');
+        $institution_db_connection->charset = 'utf8';
+        
+        return $institution_db_connection;
+    }
+    
     /**
      * @see \console\modules\analytics\collectors\base\Query
      */
@@ -59,7 +90,21 @@ class InstitutionQuery extends MongoQuery
     {
         return "SELECT * FROM organization.institution WHERE is_deleted = 'f' AND status = 1";
     }
+    
+    /**
+     * @see \console\modules\analytics\collectors\base\Query
+     */
+    public function showMessage($isUpdate, $model)
+    {
+        if ($isUpdate){
+            echo $this->targetModelClass." UPDATING row with institution_id = {$model->institution_id} FOR {$model->date} ... ".PHP_EOL;
+        }else{
+            $date = $model->date ? $model->date : $this->dateTo;
+            echo $this->targetModelClass." CREATING row with institution_id = {$model->institution_id} FOR {$date} ... ".PHP_EOL;
+        }
+    }
 }
+
 ================================================================================
 
 3. Создаем класс наследник от console\modules\analytics\collectors\base\Collector
@@ -118,7 +163,6 @@ trait InstitutionQueryAdditionalDataTrait
 namespace console\modules\analytics\queries;
 
 use core\analytics\BaseQuery;
-use console\modules\analytics\queries\traits\BilimalOriginDbConnectionTrait;
 use common\models\analytics\organization\Institution;
 
 /**
@@ -129,15 +173,14 @@ use common\models\analytics\organization\Institution;
  * @author CitizenZet <exgamer@live.ru>
  */
 class DivisionQuery extends BaseQuery
-{
-    use BilimalOriginDbConnectionTrait;
-    
+{  
     private $institution_id;
             
-    function  __construct($institution_id, $dateFrom = null, $dateTo = null)
+    function  __construct($dateFrom = null, $dateTo = null, $subQueries = null, &$inputData = null)
     {
-        parent::__construct($dateFrom, $dateTo);
-        $this->institution_id= $institution_id;
+        parent::__construct($dateFrom, $dateTo, $subQueries, $inputData);
+        $this->institution_id= $inputData['institution_id'];
+        $this->setOriginDb($inputData['db_connection']);
     }
     
     /**
@@ -145,7 +188,7 @@ class DivisionQuery extends BaseQuery
      */
     public function prepareData(&$data)
     {
-        
+
     }
 
     public function processData(&$data, &$inputData = null)
@@ -159,6 +202,14 @@ class DivisionQuery extends BaseQuery
     public function sql()
     {
         //выбираем классы со значениями grade и caption на указанной временной период
+        // В зависимости от того выборка за текущую дату или нет выставляем LEFT или INNER JOIN
+        $joinType = 'INNER';
+        $query_year = self::getCurrentAcademicYear($this->dateTo);
+        $current_year = self::getCurrentAcademicYear(date('Y-m-d'));
+        if ($query_year == $current_year){
+            $joinType = 'LEFT';
+        }
+        
         return "
             SELECT d.id,
             d.language,d.institution_id,
@@ -169,12 +220,13 @@ class DivisionQuery extends BaseQuery
                         ELSE d.grade
             END) as grade
             FROM organization.division  d
-            LEFT JOIN organization.division_period dg ON dg.division_id = d.id AND '{$this->dateFrom}'>=dg.from_ts AND '{$this->dateTo}'<=dg.to_ts AND dg.is_deleted = 'f' AND dg.status = 1
+            {$joinType} JOIN organization.division_period dg ON dg.division_id = d.id AND '{$this->dateFrom}'>=dg.from_ts AND '{$this->dateTo}'<=dg.to_ts AND dg.is_deleted = 'f' AND dg.status = 1
             WHERE d.is_deleted = 'f' AND d.status = 1 AND (d.parent_id IS NULL OR d.parent_id = 0) AND d.institution_id = {$this->institution_id} 
             GROUP BY d.id,dg.caption,dg.grade    
         ";
     }
 }
+
 
 
 
