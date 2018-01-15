@@ -211,6 +211,9 @@ trait RemoteBaseActiveQueryTrait
         if ($this->remoteWhere && is_array($this->remoteWhere)){
             $communicator->setQuery($this->remoteWhere);
         }
+        if ($this->searchByRemoteFields){
+            $communicator->setQuery(['per-page'=>1000]);
+        }
         $remoteData = $communicator->sendRequest();
         //индесируем удаленные данные по первичному ключу
         $this->indexBy=function($row) use ($model){

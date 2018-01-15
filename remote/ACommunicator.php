@@ -317,6 +317,17 @@ abstract class ACommunicator  extends Component
     public function setQuery($query)
     {
         $this->query = array_merge($this->query, $query);
+    } 
+    
+    /**
+     * Удаляет ге т параметр
+     * @param type $get
+     */
+    public function removeQuery($get)
+    {
+        if (isset($this->query[$get])){
+            unset($this->query[$get]);
+        }
     }
     
     /**
