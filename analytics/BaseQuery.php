@@ -104,7 +104,7 @@ abstract class BaseQuery
      */
     public function _execute(&$inputData = null)
     {
-        $this->setTotalCount();
+        //$this->setTotalCount();
         $dataArray = $this->executeSql();
         $this->lastDataCount = count($dataArray);
         if ($this->lastDataCount == 0){
