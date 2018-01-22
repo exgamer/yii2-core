@@ -176,7 +176,7 @@ abstract class BaseQuery
     /**
      *  get rows by sql
      */
-    private function executeSql()
+    public function executeSql()
     {
         $sql = $this->sql();
         $sql.=' LIMIT '.$this->pageSize;
