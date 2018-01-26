@@ -88,6 +88,7 @@ abstract class BaseQuery
      */
     public function execute(&$inputData = null)
     {
+        $this->beforeExecute($inputData);
         do {
             $this->_execute($inputData);
         } while (! $this->isDone());
@@ -210,6 +211,15 @@ abstract class BaseQuery
         return $this->totalCount;
     }
 
+    /**
+     * Действия до запуска query
+     * @param array $inputData
+     */
+    public function beforeExecute(&$inputData = null)
+    {
+        
+    }
+    
     /**
      * Действия после завершения операции
      * @param type $data
