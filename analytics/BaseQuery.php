@@ -105,7 +105,6 @@ abstract class BaseQuery
      */
     public function _execute(&$inputData = null)
     {
-        //$this->setTotalCount();
         $dataArray = $this->executeSql();
         $this->lastDataCount = count($dataArray);
         if ($this->lastDataCount == 0){
@@ -119,6 +118,7 @@ abstract class BaseQuery
             $this->processData($data, $inputData);
             $this->finishProcess($data, $inputData);
         }
+        $this->afterPageProcess($inputData);
         $this->currentPage++;
         
         return true;
@@ -226,6 +226,15 @@ abstract class BaseQuery
      * @param type $inputData
      */
     public function finishProcess(&$data, &$inputData = null)
+    {
+        
+    }
+    
+    /**
+     * Действия после завершения обработки 1 страницы данных
+     * @param type $inputData
+     */
+    public function afterPageProcess(&$inputData = null)
     {
         
     }
