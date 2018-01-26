@@ -89,6 +89,10 @@ abstract class BaseQuery
     public function execute(&$inputData = null)
     {
         $this->beforeExecute($inputData);
+        if (! $this->isExecute($inputData))
+        {
+            return true;
+        }
         do {
             $this->_execute($inputData);
         } while (! $this->isDone());
@@ -218,6 +222,15 @@ abstract class BaseQuery
     public function beforeExecute(&$inputData = null)
     {
         
+    }
+    
+    /**
+     * 
+     * @param type $inputData
+     */
+    public function isExecute(&$inputData = null)
+    {
+        return true;
     }
     
     /**
