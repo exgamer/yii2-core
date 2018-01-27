@@ -6,6 +6,7 @@ use yii\base\Exception;
 use yii\base\Component;
 use common\filters\HttpBearerAuth;
 use common\helpers\ConstHelper;
+use core\remote\ABaseCommunicator;
 
 /**
  * Базовый класс для запроса на удаленный ресурс
@@ -13,7 +14,7 @@ use common\helpers\ConstHelper;
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
-abstract class ACommunicator  extends Component 
+abstract class ACommunicator  extends ABaseCommunicator 
 {
     protected $connection;
     protected $url;
