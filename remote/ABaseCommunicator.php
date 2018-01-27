@@ -53,7 +53,7 @@ abstract class ABaseCommunicator  extends Component
         // Connect
         $this->connection = curl_init();
         if (!$this->connection) {
-            throw new ACommunicatorException(Yii::t('api', 'Не удалось инициализировать соединение'));
+            throw new ABaseCommunicatorException(Yii::t('api', 'Не удалось инициализировать соединение'));
         }
         // установка параметров запроса
         if(isset($_GET['backend_debug'])){
@@ -114,7 +114,7 @@ abstract class ABaseCommunicator  extends Component
         } catch (InvalidParamException $ex) {
         }
         if (in_array($curlInfo['http_code'], [401] )){
-            throw new ACommunicatorException($message,$curlInfo['http_code']);
+            throw new ABaseCommunicatorException($message,$curlInfo['http_code']);
         }
         #если удаленный ресурс не авторизовал не выбиваем ошибку и просто указываем что данных нет
         if ($curlInfo['http_code'] == 403 && $code == 603 ){
@@ -123,7 +123,7 @@ abstract class ABaseCommunicator  extends Component
         }
         #если код ответа не входит в массив успешных шлем нахер и возвращаем ошибку
         if (! in_array($curlInfo['http_code'], $this->success_http_codes )){
-            throw new ACommunicatorException($message, $code);
+            throw new ABaseCommunicatorException($message, $code);
         } 
     }
     
@@ -137,7 +137,7 @@ abstract class ABaseCommunicator  extends Component
             $errorCode = curl_errno($this->connection);
             switch ($errorCode) {
                 case 28:
-                    throw new ACommunicatorException(Yii::t('api', 'Недоступен сервер авторизации.'),500);
+                    throw new ABaseCommunicatorException(Yii::t('api', 'Недоступен сервер авторизации.'),500);
             }
     }
     
