@@ -41,7 +41,7 @@ abstract class ABaseCommunicator  extends Component
         201,
         204
     ); 
-    private $headers = null;
+    private $headers = [];
     
     /**
      * Посылаем запрос

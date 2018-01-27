@@ -3,7 +3,6 @@ namespace core\remote;
 
 use Yii;
 use yii\base\Exception;
-use yii\base\Component;
 use common\filters\HttpBearerAuth;
 use common\helpers\ConstHelper;
 use core\remote\ABaseCommunicator;
