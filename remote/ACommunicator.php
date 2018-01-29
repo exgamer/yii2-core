@@ -15,6 +15,7 @@ use core\remote\ABaseCommunicator;
  */
 abstract class ACommunicator  extends ABaseCommunicator 
 {
+    
     public function init()
     {
         #инициализация основных хидеров
