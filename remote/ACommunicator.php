@@ -15,25 +15,6 @@ use core\remote\ABaseCommunicator;
  */
 abstract class ACommunicator  extends ABaseCommunicator 
 {
-    protected $connection;
-    protected $url;
-    protected $query = [];
-    protected $urlIDParam;
-    protected $method = 'GET';
-    protected $contentType = 'application/json';
-    protected $postfields = null;
-    protected $option_defaults = array(
-        CURLOPT_HEADER => false,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 5
-    ); 
-    protected $success_http_codes = array(
-        200,
-        201,
-        204
-    ); 
-    private $headers = null;
-    
     public function init()
     {
         #инициализация основных хидеров
