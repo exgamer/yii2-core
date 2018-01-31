@@ -16,13 +16,14 @@ abstract class Collector
     public $dateFrom;
     public $dateTo;
     public $queries;
+    public $params;
 
     function  __construct($dateFrom = null, $dateTo = null, $queries = [],$params = [])
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
         $this->queries = $queries;
-        $this->setUp($params);
+        $this->params = $params;
     }
     
     /**
@@ -33,16 +34,18 @@ abstract class Collector
     public function collect()
     {
         $queryClass = $this->queryClass;
+        $query = $queryClass::query($this->dateFrom, $this->dateTo, $this->queries);
+        $this->querySetUp($query);
         
-        return $queryClass::query($this->dateFrom, $this->dateTo, $this->queries);
+        return $query;
     }
     
     /**
-     * для доп телодвижений
+     * для доп телодвижений c query
      * 
-     * @param array $params
+     * @param Query $query
      */
-    public function setUp(&$params)
+    public function querySetUp(&$query)
     {
         
     }
