@@ -91,8 +91,7 @@ abstract class BaseCollectorController extends BaseCommandController
         if ($this->queries){
             $this->queryList = explode(',', $this->queries);
         }
-        $model = new $collectorClass($this->dateFrom, $this->dateTo, $this->queryList);
-        $this->setUpCollector($model);
+        $model = $this->getCollector($collectorClass);
         $this->outputSuccess(Yii::t('console','{collector} запущен...', ['collector' => $collector]));
         if (! $model->collect()) {
             VarDumper::dump($model->getErrors());
@@ -101,13 +100,13 @@ abstract class BaseCollectorController extends BaseCommandController
     }
     
     /**
-     * Если нужно что то сделать с коллектором перед запуском
+     * Возвращает коллектор
      * 
-     * @param Collector $collector
+     * @return Collector $collector
      */
-    public function setUpCollector($collector)
+    public function getCollector($collectorClass)
     {
-        
+        return new $collectorClass($this->dateFrom, $this->dateTo, $this->queryList);
     }
     
     /**
