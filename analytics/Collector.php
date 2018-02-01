@@ -34,19 +34,8 @@ abstract class Collector
     public function collect()
     {
         $queryClass = $this->queryClass;
-        $query = $queryClass::query($this->dateFrom, $this->dateTo, $this->queries);
-        $this->querySetUp($query);
+        $query = $queryClass::query($this->dateFrom, $this->dateTo, $this->queries, $this->params);
         
         return $query;
-    }
-    
-    /**
-     * для доп телодвижений c query
-     * 
-     * @param Query $query
-     */
-    public function querySetUp(&$query)
-    {
-        
     }
 }
