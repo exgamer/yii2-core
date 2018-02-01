@@ -37,6 +37,8 @@ abstract class BaseCollectorController extends BaseCommandController
      */
     public $dateTo = null;
     
+    public $page = null;
+    
     /**
      * Списко коллекторов
      * @var array
@@ -53,7 +55,7 @@ abstract class BaseCollectorController extends BaseCommandController
     
     public function options($actionID)
     {
-        return ['collector','dateFrom','dateTo','queries'];
+        return ['collector','dateFrom','dateTo','queries','page'];
     }
     
     /**
@@ -106,7 +108,7 @@ abstract class BaseCollectorController extends BaseCommandController
      */
     public function getCollector($collectorClass)
     {
-        return new $collectorClass($this->dateFrom, $this->dateTo, $this->queryList);
+        return new $collectorClass($this->dateFrom, $this->dateTo, $this->queryList,['page'=>$this->page]);
     }
     
     /**
