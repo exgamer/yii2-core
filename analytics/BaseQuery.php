@@ -11,6 +11,7 @@ use yii\base\Exception;
  * @property integer $lastDataCount - last sql result rows count
  * @property integer $totalCount - total data count
  * @property integer $currentPage - current page
+ * @property integer $targetPage - target page
  * @property boolean $bySinglePage - procees by single page
  * @property date    $dateFrom    - начало периода сбора инфы
  * @property date    $dateTo      - конец периода сбора инфы
@@ -26,6 +27,7 @@ abstract class BaseQuery
     public $lastDataCount = 0;
     public $totalCount = 0;
     public $currentPage = 0;
+    public $targetPage = 0;
     public $bySinglePage = false;
     public $dateFrom;
     public $dateTo;
@@ -113,7 +115,7 @@ abstract class BaseQuery
     {
         $dataArray = $this->executeSql();
         $this->lastDataCount = count($dataArray);
-        if ($this->lastDataCount == 0 || $this->bySinglePage){
+        if ($this->lastDataCount == 0){
 
             return true;
         }
@@ -130,6 +132,9 @@ abstract class BaseQuery
         }
         $this->afterPageProcess($inputData);
         $this->currentPage++;
+        if ($this->bySinglePage){
+            $this->lastDataCount = 0;
+        }
         
         return true;
     }
@@ -228,7 +233,7 @@ abstract class BaseQuery
     public function beforeExecute(&$inputData = null)
     {
         if (isset($inputData['page'])){
-            $this->currentPage = $inputData['page'];
+            $this->currentPage = $this->targetPage = $inputData['page'];
             $this->bySinglePage = true;
         }
     }
