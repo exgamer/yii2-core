@@ -88,19 +88,14 @@ abstract class BaseQuery
      */
     public function execute(&$inputData = null)
     {
-        try{
-            $this->beforeExecute($inputData);
-            if (! $this->isExecute($inputData))
-            {
-                return true;
-            }
-            do {
-                $this->_execute($inputData);
-            } while (! $this->isDone());
-        } catch (BaseQueryNoDbConnectException $db_ex){
-            $this->noDbConnectionExceptionActions($db_ex);
+        $this->beforeExecute($inputData);
+        if (! $this->isExecute($inputData))
+        {
             return true;
         }
+        do {
+            $this->_execute($inputData);
+        } while (! $this->isDone());
         
         return true;
     }
@@ -121,11 +116,16 @@ abstract class BaseQuery
             return true;
         }
         foreach ($dataArray as $data) {
-            $isUpdate = false;
-            $this->prepareData($data);
-            $this->executeSubQueries($data);
-            $this->processData($data, $inputData);
-            $this->finishProcess($data, $inputData);
+            try{
+                $isUpdate = false;
+                $this->prepareData($data);
+                $this->executeSubQueries($data);
+                $this->processData($data, $inputData);
+                $this->finishProcess($data, $inputData);
+            } catch (\yii\db\Exception $dbEx){
+                $this->noDbConnectionExceptionActions($data, $dbEx);
+                continue;
+            }
         }
         $this->afterPageProcess($inputData);
         $this->currentPage++;
@@ -191,11 +191,7 @@ abstract class BaseQuery
         $sql = $this->sql();
         $sql.=' LIMIT '.$this->pageSize;
         $sql.=' OFFSET '.($this->pageSize * $this->currentPage);
-        try{
-            $data = $this->getOriginDb()->createCommand($sql)->queryAll();
-        } catch (Exception $e){
-            throw new BaseQueryNoDbConnectException("No Db Connection");
-        }
+        $data = $this->getOriginDb()->createCommand($sql)->queryAll();
         
         return $data;
     }
@@ -264,9 +260,10 @@ abstract class BaseQuery
     /**
      * Дейсвия при недоступности БД
      * 
-     * @param BaseQueryNoDbConnectException $exception
+     * @param array $data
+     * @param \yii\db\Exception $exception
      */
-    public function noDbConnectionExceptionActions($exception)
+    public function noDbConnectionExceptionActions($data, $exception)
     {
         
     }
@@ -290,11 +287,4 @@ abstract class BaseQuery
      * return string
      */
     abstract function sql();
-}
-class BaseQueryNoDbConnectException extends Exception 
-{
-        public function getName()
-        {
-                return 'BaseQueryNoDbConnectException';
-        }
 }
