@@ -1,6 +1,7 @@
 <?php
 namespace core\controllers;
 
+use Yii;
 use yii\base\InvalidConfigException;
 use core\models\ActiveRecord;
 use core\controllers\ActiveController;
