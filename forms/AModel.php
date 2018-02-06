@@ -49,7 +49,8 @@ abstract class AModel extends Model
      */
     public static function getDb()
     {
-        $relatedModelClass = $this->relatedModel;
+        $self = new static();
+        $relatedModelClass = $self->getRelatedModel();
         if ($relatedModelClass){
             return $relatedModelClass::getDb();
         }

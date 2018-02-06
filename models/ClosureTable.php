@@ -118,8 +118,8 @@ abstract class ClosureTable extends ActiveRecord
                 $sql,
                 [
                         ':ID'=>$this->id,
-                        ':ID_PARENT'=>$this->{PARENT_ID_FIELD},
-                        ':IS_ROOT'=>($this->{PARENT_ID_FIELD} && $this->{PARENT_ID_FIELD} > 0) ? 0 :1,
+                        ':ID_PARENT'=>$this->id_parent,
+                        ':IS_ROOT'=>($this->id_parent && $this->id_parent > 0) ? 0 :1,
                         ':NAME'=> property_exists($this, 'name') ? $this->name : null,
                 ]
         )
