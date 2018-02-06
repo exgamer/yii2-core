@@ -65,7 +65,7 @@ abstract class ClosureTable extends ActiveRecord
             WHERE ot.id_parent = :ID
         ";
 
-        $command = self::getDb()->createCommand($sql);
+        $command = static::getDb()->createCommand($sql);
         $command->bindValue(':ID', $this->id);
         $result = $command->queryAll();
         
@@ -114,7 +114,7 @@ abstract class ClosureTable extends ActiveRecord
                 SET path =  excluded.path,
                             is_root = excluded.is_root
         ";
-        self::getDb()->createCommand(
+        static::getDb()->createCommand(
                 $sql,
                 [
                         ':ID'=>$this->id,
@@ -138,7 +138,7 @@ abstract class ClosureTable extends ActiveRecord
            WHERE id_child = :ID
         ";
 
-        $command = self::getDb()->createCommand($sql);
+        $command = static::getDb()->createCommand($sql);
         $command->bindValue(':ID' ,$this->id);
         $command->execute();
     }
@@ -170,7 +170,7 @@ abstract class ClosureTable extends ActiveRecord
             AND a.id_child = :IDTARGER
         ";
 
-        $command = self::getDb()->createCommand($sql);
+        $command = static::getDb()->createCommand($sql);
         $command->bindValue(':ID' ,$this->id);
         $command->bindValue(':IDTARGER' ,$target_id);
         $command->execute();
