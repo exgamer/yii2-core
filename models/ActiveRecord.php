@@ -92,9 +92,31 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
      */
     public static function find()
     {
-        return new ActiveQuery(get_called_class());
+        $queryClass = static::getBaseActiveQueryClass();
+        $query = new $queryClass(get_called_class());
+        static::queryExtend($query);
+        
+        return $query;
     }
 
+    /**
+     * Действия перед запросом
+     * @param AQ $query
+     */
+    public static function queryExtend($query)
+    {
+        
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public static function getBaseActiveQueryClass()
+    {
+        return 'core\queries\BaseActiveQuery';
+    }
+    
     /**
      * Проверяем на наличие стандартных колонок и записываем значения по дефолту
      * @param bool $insert

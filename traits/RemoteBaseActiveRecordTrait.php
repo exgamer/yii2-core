@@ -46,14 +46,16 @@ trait RemoteBaseActiveRecordTrait
             return static::findLocally($alias);
         }
         $query = static::getQuery();
+        static::queryExtend($query);
         
         return $query;
     }
-    
+
     public static function findLocally($alias=null)
     {
         static::beforeFindModel();
-        $query = Yii::createObject('core\queries\BaseActiveQuery',[get_called_class()]);
+        $query = Yii::createObject(static::getBaseActiveQueryClass(),[get_called_class()]);
+        static::queryExtend($query);
         static::afterFindModel();
         
         return $query;
@@ -66,10 +68,37 @@ trait RemoteBaseActiveRecordTrait
     protected static function getQuery()
     {
         if (! static::$onlyRemote){
-            return Yii::createObject('core\remote\queries\MixedRemoteBaseActiveQuery',[get_called_class()]);
+            return Yii::createObject(static::getMixedRemoteBaseActiveQueryClass(),[get_called_class()]);
         }
         
-        return Yii::createObject('core\remote\queries\RemoteBaseActiveQuery',[get_called_class()]);
+        return Yii::createObject(self::getRemoteBaseActiveQueryClass(),[get_called_class()]);
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public static function getBaseActiveQueryClass()
+    {
+        return 'core\queries\BaseActiveQuery';
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public static function getMixedRemoteBaseActiveQueryClass()
+    {
+        return 'core\remote\queries\MixedRemoteBaseActiveQuery';
+    }
+    
+    /**
+     * 
+     * @return string
+     */
+    public static function getRemoteBaseActiveQueryClass()
+    {
+        return 'core\remote\queries\RemoteBaseActiveQuery';
     }
     
     /**
