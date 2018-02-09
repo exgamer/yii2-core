@@ -483,4 +483,7 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
 
         return true;
     }
+    
+    public static function beforeFindModel(){}
+    public static function afterFindModel(){}
 }

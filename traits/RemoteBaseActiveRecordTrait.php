@@ -78,15 +78,6 @@ trait RemoteBaseActiveRecordTrait
      * 
      * @return string
      */
-    public static function getBaseActiveQueryClass()
-    {
-        return 'core\queries\BaseActiveQuery';
-    }
-    
-    /**
-     * 
-     * @return string
-     */
     public static function getMixedRemoteBaseActiveQueryClass()
     {
         return 'core\remote\queries\MixedRemoteBaseActiveQuery';

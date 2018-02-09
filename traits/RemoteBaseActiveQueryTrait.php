@@ -14,7 +14,7 @@ use yii\web\Request;
  */
 trait RemoteBaseActiveQueryTrait
 {
-    public $remoteActiveRecordClass = 'core\models\RemoteBaseActiveRecord';
+    public $remoteActiveRecordClass = 'core\models\RemoteBaseActiveRecord'; 
     
     public $splittedRemoteActiveRecordClass = 'core\models\SplittedBaseActiveRecord';
     
