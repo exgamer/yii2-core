@@ -100,7 +100,8 @@ abstract class BaseQuery
         do {
             $this->_execute($inputData);
         } while (! $this->isDone());
-        
+        $this->afterExecute($inputData);
+
         return true;
     }
     
@@ -236,6 +237,15 @@ abstract class BaseQuery
             $this->currentPage = $this->targetPage = $inputData['page'];
             $this->bySinglePage = true;
         }
+    }
+    
+    /**
+     * дествия после завершения всех запросов
+     * @param array $inputData
+     */
+    public function afterExecute(&$inputData = null)
+    {
+
     }
     
     /**
