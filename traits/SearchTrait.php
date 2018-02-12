@@ -72,12 +72,14 @@ trait SearchTrait
      */
     public function formName()
     {
-        $parsers = Yii::$app->request->parsers;
-        if(
-                isset($parsers['application/json']) 
-                && $parsers['application/json'] == 'yii\web\JsonParser'
-        ){
-            return '';
+        if (Yii::$app->request instanceof \yii\web\Request){
+            $parsers = Yii::$app->request->parsers;
+            if(
+                    isset($parsers['application/json']) 
+                    && $parsers['application/json'] == 'yii\web\JsonParser'
+            ){
+                return '';
+            }
         }
         
         return parent::formName();
