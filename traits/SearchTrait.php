@@ -8,10 +8,14 @@ use core\data\CacheDataProvider;
 /**
  * Трейт для поиска по моделям
  *
+ * @property boolean $asArray выдавать массив или объекты
+ * 
  * @author Kamaelkz <kamaelkz@yandex.kz>
  */
 trait SearchTrait 
 {
+    public $asArray = false;
+    
     /**
      * Формирование провайдера
      * 
@@ -55,10 +59,10 @@ trait SearchTrait
     public function isArray()
     {
         if (isset($_GET['asArray']) && $_GET['asArray']=='true'){
-            return true;
+            return $this->asArray = true;
         }
         
-        return false;
+        return $this->asArray;
     }
     
     /**
