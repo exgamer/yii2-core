@@ -29,8 +29,8 @@ class VariativeFieldValidator extends Validator
         if ($this->integerOnly){
             $validator->integerOnly=true;
         }
-        if (is_array($this->{$attribute})){
-            foreach ($this->{$attribute} as $val) {
+        if (is_array($model->{$attribute})){
+            foreach ($model->{$attribute} as $val) {
                 if (! $validator->validate($val)){
                     $this->addError($attribute,Yii::t('api', "Неверное значение = ".$val));
                     return false;
@@ -40,9 +40,9 @@ class VariativeFieldValidator extends Validator
             return true;
         }
         
-        if(stristr($this->{$attribute}, ',')){
+        if(stristr($model->{$attribute}, ',')){
             $result = null;
-            $array= explode(',', $this->{$attribute});
+            $array= explode(',', $model->{$attribute});
             foreach ($array as $value) {
                 if (! $validator->validate($value)){
                     $this->addError($attribute,Yii::t('api', "Неверное значение = ".$val));
@@ -51,15 +51,15 @@ class VariativeFieldValidator extends Validator
                 
                 $result[] = $value;
             }
-            $this->{$attribute} = $result;
+            $model->{$attribute} = $result;
             
             return true;
         }
         
 
 
-        if (! $validator->validate($this->{$attribute})){
-            $this->addError($attribute,Yii::t('api', "Неверное значение = ".$this->{$attribute}));
+        if (! $validator->validate($model->{$attribute})){
+            $this->addError($attribute,Yii::t('api', "Неверное значение = ".$model->{$attribute}));
             return false;
         }
 
