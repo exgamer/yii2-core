@@ -22,9 +22,6 @@ abstract class AFormService extends AService
     public function save(AModel $form , ActiveRecord $model = null)
     {
         $modelClass = $form->getRelatedModel();
-        if (property_exists($form, 'id') && $form->id && ! $model){
-            $model = $modelClass::find()->byPk($form->id)->one();
-        }
         if($model === null){
             $model = new $modelClass();
         }
@@ -36,6 +33,7 @@ abstract class AFormService extends AService
             
             return false;
         }
+        $this->setPrimaryKeysToFrom($form, $model);
         $this->afterModelSave($form, $model);
         
         return $model;
@@ -60,5 +58,20 @@ abstract class AFormService extends AService
     protected function afterModelSave($form , $model)
     {
 
+    }
+    
+    /**
+     * Выставляем полученные примари ключи в форму
+     * @param AR $form
+     * @param AR $model
+     */
+    public function setPrimaryKeysToFrom($form, $model)
+    {
+        $primaryKeys = $model::primaryKey();
+        foreach ($primaryKeys as $attribute) {
+            if (property_exists($form, $attribute)){
+                $form->{$attribute} = $model->{$attribute};
+            }
+        }
     }
 }
