@@ -64,6 +64,9 @@ class RemoteActiveDataProvider extends ActiveDataProvider
         $query->setExpand();
         $this->query->remoteData = $query->getData();
         $localCount = $this->getLocalDataCount($query);
+        if (count($this->query->remoteData) == 0){
+            $localCount = 0;
+        }
         if (($pagination = $this->getPagination()) !== false) {
             $pagination->totalCount = $localCount;
             if ($pagination->totalCount === 0) {
