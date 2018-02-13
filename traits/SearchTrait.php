@@ -5,6 +5,7 @@ namespace core\traits;
 use Yii;
 use core\data\CacheDataProvider;
 use yii\base\Exception;
+use core\interfaces\IBaseSearch;
 
 /**
  * Трейт для поиска по моделям
