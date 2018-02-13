@@ -49,6 +49,9 @@ class CacheDataProvider extends \yii\data\ActiveDataProvider
      */
     public function resolveRelations(&$query)
     {
+        if (Yii::$app->request instanceof \yii\console\Request){
+            return;
+        }
         if (is_bool($this->asArray) && $this->asArray){
             $modelClass = $this->query->modelClass;
             $model = new $modelClass();
