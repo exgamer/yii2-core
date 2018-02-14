@@ -41,8 +41,7 @@ trait RemoteBaseActiveQueryAdditionalTrait
      */
     public function count($q = '*', $db = null)
     {
-
-        return 1;
+        return parent::count($q,$db);
     }
     
     //TODO обрубить остальные методы BaseActiveQuery которые мы пока не поддерживаем
