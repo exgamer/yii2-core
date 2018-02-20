@@ -15,6 +15,7 @@ use core\remote\ABaseCommunicator;
  */
 abstract class ACommunicator  extends ABaseCommunicator 
 {
+    public $accesBearerValue;
     
     public function init()
     {
@@ -110,7 +111,7 @@ abstract class ACommunicator  extends ABaseCommunicator
             'Content-Type:'.$this->contentType,
             'Authorization:Bearer '.$this->getAuthToken(),
             //'Access:Bearer ' . Yii::$app->settings->byName("app-pedat-".ConstHelper::PDS_TOKEN),
-            'Access:Bearer ' . Yii::$app->settings->byName(Yii::$app->id."-".ConstHelper::PDS_TOKEN),
+            'Access:Bearer ' . $this->getAccessBearer(),
             'Access-Route: ' . $this->getCurrentRoute(),
 //            'Access-Role: ' . 'superadmin'
             'Access-Role: ' . $this->getRoleHeader()
@@ -135,6 +136,28 @@ abstract class ACommunicator  extends ABaseCommunicator
                 $this->query[$param] = Yii::$app->request->get($param);
             }
         }
+    }
+    
+    /**
+     * Возвращает токен дял атворизации системы 
+     * @return string
+     */
+    public function getAccessBearer()
+    {
+        if ($this->accesBearerValue){
+            return $this->accesBearerValue;
+        }
+        
+        return Yii::$app->settings->byName(Yii::$app->id."-".ConstHelper::PDS_TOKEN);
+    }
+    
+    /**
+     * устанавливает токен для авторизации системы
+     * @param string $accesBearerValue
+     */
+    public function setAccessBearer($accesBearerValue)
+    {
+        $this->accesBearerValue = $accesBearerValue;
     }
 }
 
