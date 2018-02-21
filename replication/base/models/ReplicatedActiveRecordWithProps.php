@@ -36,6 +36,10 @@ abstract class ReplicatedActiveRecordWithProps extends ActiveRecordWithProps
     {
         if(static::$onlyReplica){
             $this->beforeSaveModel();
+            if (! parent::validate($runValidation, $attributeNames)){
+                
+                return false;
+            }
             $this->afterSaveProps();
             
             return true;
