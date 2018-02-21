@@ -24,6 +24,7 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
             $replica = $this->getReplicationModel();
         }
         $this->loadReplicationData($model, $replica);
+        $this->processReplicationData($replica);
         if (! $replica->save()){
             throw new Exception(Yii::t('api','Не удалось сохранить реплику'), 500);
         }
@@ -195,6 +196,15 @@ abstract class BaseMongoReplicationHandler extends BaseReplicationHandler
         }
         
         return $class;
+    }
+    
+    /**
+     * Для обработки реплики
+     * @param AR $replica
+     */
+    public function processReplicationData($replica)
+    {
+        
     }
     
     /**

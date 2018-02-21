@@ -19,6 +19,17 @@ abstract class ReplicatedActiveRecordWithProps extends ActiveRecordWithProps
     public static $ignoreEmptyValuesOnUpdate = false;
     
     /**
+     * 
+     * @see yii\base\Model
+     */
+    public function validate($attributeNames = null, $clearErrors = true)
+    {
+        $this->beforeSaveModel();
+        
+        return parent::validate($attributeNames, $clearErrors);
+    }
+
+    /**
      *  save base model with all properties
      */
     public function save($runValidation = true, $attributeNames = null)
