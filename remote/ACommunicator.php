@@ -24,19 +24,23 @@ abstract class ACommunicator  extends ABaseCommunicator
         $this->initBaseQuery();
     }
 
-    private function getCurrentRoute() {
-		$c = Yii::$app->controller;
+    private function getCurrentRoute() 
+    {
+        $c = Yii::$app->controller;
         if (! $c){
             return null;
         }
-		$route = [];
-		foreach (array_slice($c->modules, 1) as $module) {
-			$route[] = $module->id;
-		}
-		$route[] = $c->id;
-		$route[] = $c->action->id;
-		return implode('/', $route);
-	}
+        $route = [];
+        if($c->modules) {
+            foreach (array_slice($c->modules, 1) as $module) {
+                    $route[] = $module->id;
+            }
+        }
+        $route[] = $c->id;
+        $route[] = $c->action->id;
+        
+        return implode('/', $route);
+    }
 
     /**
      * Получение текущей роли с хидера, если это консоль то будет superadmin

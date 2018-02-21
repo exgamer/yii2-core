@@ -1,7 +1,6 @@
 <?php
 namespace yii\helpers;
 
-use Yii;
 use yii\base\Arrayable;
 use yii\helpers\BaseArrayHelper;
 
@@ -19,6 +18,7 @@ class ArrayHelper extends BaseArrayHelper
             array_walk($value, function(&$item, $key) {
                     $item = sprintf('"%s": "%s"', $key, $item);
             });
+            
             return '{' . implode(', ', $value) . '}';
     }
     
@@ -29,15 +29,16 @@ class ArrayHelper extends BaseArrayHelper
      * @param array $set
      * @return string
      */
-    public static function toPostgresArray($set) 
+    public static function toPostgresArray($array) 
     {
-        settype($set, 'array'); // can be called with a scalar or array
-        $result = array();
-        foreach ($set as $t) {
-                $t = str_replace('"', '\\"', $t); // escape double quote
-                if (! is_numeric($t)) // quote only non-numeric values
-                    $t = '"' . $t . '"';
-                $result[] = $t;
+        settype($array, 'array'); // can be called with a scalar or array
+        $result = [];
+        foreach ($array as $item) {
+                $r = str_replace('"', '\\"', $item); // escape double quote
+                if (! is_numeric($r)) { // quote only non-numeric values
+                    $r = sprintf('"%s"', $r);
+                }
+                $result[] = $r;
         }
 
         return '{' . implode(",", $result) . '}'; // format
@@ -50,15 +51,21 @@ class ArrayHelper extends BaseArrayHelper
      * @param string $string - строка из постгреса {"a","b"}
      * @return array
      */
-    public static function toPhpArray($string) 
+    public static function toPhpArray($string)
     {
+        #на случай если в строке хранится не массив postgres
+        if(! preg_match("/{*}/s", $string)) {
+            return $string;
+        }
         $result = [];
-        $items = (str_getcsv(trim($string, '[2:2]={}')));
-        if(! $items){
+        $items = str_getcsv($string);
+        if(! $items || !is_array($items)){
             return $result;
         }
         foreach ($items as $key => $string){
-            $result[] = trim($string, '{\"}');
+            $r = trim($string, '{"}');
+            $r = str_replace('\\"', '"', $r);
+            $result[] = $r;
         }
  
         return $result;
