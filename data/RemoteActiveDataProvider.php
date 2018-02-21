@@ -41,7 +41,7 @@ class RemoteActiveDataProvider extends ActiveDataProvider
     protected function prepareTotalCount()
     {
         $modelClass = $this->query->modelClass;
-        if ((property_exists($modelClass, 'findLocally') && $modelClass::$findLocally)){
+        if ((property_exists($modelClass, 'findLocally') && $modelClass::$findLocally) || ! $this->query instanceof RemoteBaseActiveQuery || ! $this->query instanceof MixedRemoteBaseActiveQuery){
             return parent::prepareTotalCount();
         }
         if (!$this->query instanceof QueryInterface) {
