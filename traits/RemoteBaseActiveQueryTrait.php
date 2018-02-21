@@ -255,6 +255,35 @@ trait RemoteBaseActiveQueryTrait
     }
     
     /**
+     * Получение локальных данных
+     * @return array || array of AR
+     */
+    public function getLocalData()
+    {
+        if ($this->localData){
+            return $this->localData;
+        }
+        $model = $this->getModel();
+        #индексируем данные по первичному ключу
+        $this->indexBy=function($row) use ($model){
+            return $this->getIndexKeyByPrimary($model, $row);
+        };
+        $localData = parent::all();
+        if (! $localData){
+            return $localData;
+        }
+        #отрубаем индексирвоание на всякий случай
+        $this->indexBy = null;
+        #берем ключи от полученных записей
+        $ids = array_keys($localData);
+        //print_r($ids);
+        $keyData = $this->getKeyData($ids);
+        $this->remoteWhere = array_merge($this->remoteWhere, $keyData);
+
+        return $localData;
+    }
+    
+    /**
      * Добавить в запрос id из удаленного запроса
      * @param type $result
      */

@@ -40,33 +40,5 @@ trait MixedRemoteBaseActiveQueryAdditionalTrait
 
         return $this->mergeData($localData, $remoteData);
     }
-    
-    /**
-     * Получение локальных данных
-     * @return array || array of AR
-     */
-    public function getLocalData()
-    {
-        if ($this->localData){
-            return $this->localData;
-        }
-        $model = $this->getModel();
-        #индексируем данные по первичному ключу
-        $this->indexBy=function($row) use ($model){
-            return $this->getIndexKeyByPrimary($model, $row);
-        };
-        $localData = parent::all();
-        if (! $localData){
-            return $localData;
-        }
-        #отрубаем индексирвоание на всякий случай
-        $this->indexBy = null;
-        #берем ключи от полученных записей
-        $ids = array_keys($localData);
-        $keyData = $this->getKeyData($ids);
-        $this->remoteWhere = array_merge($this->remoteWhere, $keyData);
-
-        return $localData;
-    }
 }
 
