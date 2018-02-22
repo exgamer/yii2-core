@@ -145,6 +145,29 @@ abstract class StringHelper
         return $phone;
     }
 
+    
+    /**
+     * Проверка строки на дату
+     * @param string $date
+     * @param string $format
+     * @return boolean
+     */
+    public static function isDate($date, $format = 'Y-m-d')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+    
+    /**
+     * Проверка строки на json
+     * @param string $string
+     * @return boolean
+     */
+    public static function isJson($string) {
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+    
     /**
      * Закрывает телефон маской
      * 
