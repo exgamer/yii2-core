@@ -166,6 +166,9 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
             'name' => $property,
             'index' => $index
         ];
+        if (is_array($value)){
+            $value = json_encode($value);
+        }
         if (StringHelper::isDate($value)){
             $result['value_date'] = $value;
             return $result;
