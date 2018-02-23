@@ -172,6 +172,10 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
             'name' => $property,
             'index' => $index
         ];
+        if (is_int($value)){
+            $result['value_number'] = $value;
+            return $result;
+        }
         if (is_array($value)){
             $value = json_encode($value);
         }
@@ -185,10 +189,6 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
         }
         if (is_string($value)){
             $result['value_string'] = $value;
-            return $result;
-        }
-        if (is_int($value)){
-            $result['value_number'] = $value;
             return $result;
         }
         
