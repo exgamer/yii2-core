@@ -2,7 +2,7 @@
 namespace core\helpers;
 
 use \yii\db\Command;
-use core\models\ActiveRecord;
+use yii\db\ActiveRecord;
 use yii\helpers\Json;
 use yii\base\Exception;
 use core\interfaces\IBatch;
