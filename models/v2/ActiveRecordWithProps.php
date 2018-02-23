@@ -88,6 +88,12 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
             if($propertyValue->value_string) {
                 $value = $propertyValue->value_string;
             }
+            if($propertyValue->value_date) {
+                $value = $propertyValue->value_date;
+            }
+            if($propertyValue->value_json_b) {
+                $value = $propertyValue->value_json_b;
+            }
             if(! in_array($propertyValue->name, $propertiesKeys)) {
                 continue;
             }
