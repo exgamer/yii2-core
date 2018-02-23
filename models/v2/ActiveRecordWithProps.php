@@ -123,7 +123,7 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
             if($this->{$property} === null) {
                 continue;
             }
-            if(! is_array($this->{$property})) {
+            if(! is_array($this->{$property}) || (is_array($this->{$property}) && ArrayHelper::isAssoc($this->{$property}))) {
                 $insertData[] = $this->getInsertData($property, $this->{$property});
             } else {
                 foreach ($this->{$property} as $key => $value) {

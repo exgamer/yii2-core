@@ -145,4 +145,13 @@ class ArrayHelper extends BaseArrayHelper
             return false;
         });
     }
+    
+    /**
+     * проверка на ассоциативный массив
+     * @param array $arr
+     * @return type
+     */
+    public static function isAssoc($arr){
+            return array_keys($arr) !== range(0, count($arr) - 1);
+    }
 }
