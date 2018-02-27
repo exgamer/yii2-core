@@ -93,6 +93,9 @@ abstract class AService extends Component
         if(isset($config['orderBy'])) {
             $q->orderBy($config['orderBy']);
         }
+        if(isset($config['indexBy'])) {
+            $q->indexBy($config['indexBy']);
+        }
         
         return $q->all();
     }
