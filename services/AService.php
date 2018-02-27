@@ -73,6 +73,31 @@ abstract class AService extends Component
     }
     
     /**
+     * Возвращает список по настройкам
+     * 
+     * @param string $modelClass - класс с namespace
+     * @param array $params - condition
+     * @param type $config - addditonal settings
+     */
+    public function getItems($modelClass, $params = [], $config = [])
+    {
+        $table = $modelClass::tableName();
+        $q = $modelClass::find();
+        if(isset($config['select'])) {
+            $q->select($config['select']);
+        }
+        $q->andWhere($params);
+        if(isset($config['asArray'])) {
+            $q->asArray();
+        }
+        if(isset($config['orderBy'])) {
+            $q->orderBy($config['orderBy']);
+        }
+        
+        return $q->all();
+    }
+    
+    /**
      * Получить ошибки
      * 
      * @return array
