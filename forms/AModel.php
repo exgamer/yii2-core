@@ -9,6 +9,7 @@ use yii\web\ServerErrorHttpException;
 use core\models\ActiveRecord as AR;
 
 /**
+ * @deprecated 
  * Базовая модель 
  * @property string $relatedModel Основная модель связанная с данной формой
  * 

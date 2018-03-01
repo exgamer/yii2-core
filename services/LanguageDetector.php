@@ -4,6 +4,7 @@ namespace core\services;
 use yii\base\Component;
 
 /**
+ * @deprecated
  * Определяет переданный в заголовках язык и устанавливает его в качестве используемеого языка.
  * Class LanguageDetector
  * @package app\components
