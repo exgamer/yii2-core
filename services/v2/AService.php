@@ -19,7 +19,7 @@ abstract class AService extends Component
     /**
      * @return \yii\db\Connection
      */
-    public static function getDb()
+    public function getDb()
     {
         $modelClass = $this->getRelatedModelClass();
         
@@ -56,7 +56,7 @@ abstract class AService extends Component
      */
     public function saveModel(ActiveRecord $model, $validation = true)
     {
-        return static::getDb()->transaction(function($db) use($model, $validation){
+        return $this->getDb()->transaction(function($db) use($model, $validation){
             if(! $model->save($validation)){
                     throw new Exception(
                             Yii::t('service','Не удалось сохранить модель - {errors}', [
