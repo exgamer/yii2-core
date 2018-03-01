@@ -53,7 +53,7 @@ abstract class AModel extends Model
                             Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
                     );
                 }
-                return $service->getDb()->transaction(function($db) use($model) {
+                return $service->getDb()->transaction(function($db) use($service, $model) {
                     return $service->{$this->saveMethodName}($this , $model);
                 });
         } catch (Exception $ex){
