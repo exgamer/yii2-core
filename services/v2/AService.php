@@ -35,7 +35,7 @@ abstract class AService extends Component
      * 
      * @return ActiveRecord
      */
-    public  function getById($modelClass, $id , $with = [])
+    public  function getById($modelClass, $id , $with = [], $config = [])
     {       
         $tableName = $modelClass::tableName();
         $query = $modelClass::find();
@@ -43,7 +43,9 @@ abstract class AService extends Component
             $query->with($with);
         }
         $query->where(["{$tableName}.id" => $id]);
-
+        if(isset($config['asArray'])) {
+            $query->asArray();
+        }
         return $query->one();
     }
     
