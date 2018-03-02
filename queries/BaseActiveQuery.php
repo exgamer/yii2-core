@@ -11,6 +11,8 @@ use core\helpers\ConstHelper;
  */
 class BaseActiveQuery extends ActiveQuery
 {
+    use \core\traits\QuerySearchSetTrait;
+    
     /**
      * Масссив для расширения полей возврата для модели
      * передается в модель
@@ -89,7 +91,13 @@ class BaseActiveQuery extends ActiveQuery
      */
     public function checkAttribute($attr_name)
     {
-        if (in_array($attr_name, ((new $this->modelClass)->attributes()))){
+        static $modelClass;
+        static $instance;
+        
+        if(! $instance || $this->modelClass != $modelClass) {
+            $instance = new $this->modelClass();
+        } 
+        if (in_array($attr_name, ($instance->attributes()))){
            return true;
         }
         
