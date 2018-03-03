@@ -30,6 +30,9 @@ abstract class BaseActiveControllerWithForm extends ActiveController
      * @var boolean
      */
     public $callParent = false;
+    
+    public $create_form_method = 'save';
+    public $update_form_method = 'save';
 
     public function init()
     {
@@ -59,7 +62,7 @@ abstract class BaseActiveControllerWithForm extends ActiveController
         $model->scenario = $form->scenario = ActiveRecord::SCENARIO_INSERT;
         $this->checkAccess($this->id, $model);
         $form->load(\Yii::$app->getRequest()->getBodyParams(), '');
-        if (($result = $form->save()) != false) {
+        if (($result = $form->{$this->create_form_method}()) != false) {
             $response = \Yii::$app->getResponse();
             $response->setStatusCode(201);
         } elseif (! $form->hasErrors()) {
@@ -87,7 +90,7 @@ abstract class BaseActiveControllerWithForm extends ActiveController
         $this->checkAccess($this->id, $model);
         $model->scenario = $form->scenario = ActiveRecord::SCENARIO_UPDATE;
         $form->load(\Yii::$app->getRequest()->getBodyParams(), '');
-        if (($result = $form->save($model)) === false 
+        if (($result = $form->{$this->update_form_method}($model)) === false 
             && ! $form->hasErrors()
         ) {
             throw new ServerErrorHttpException('Failed to update the object for unknown reason.');
