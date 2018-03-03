@@ -54,12 +54,21 @@ abstract class AModel extends Model
                     );
                 }
                 return $service->getDb()->transaction(function($db) use($service, $model) {
-                    return $service->{$this->saveMethodName}($this , $model);
+                    $method = $this->getSaveMethodName();
+                    return $service->{$method}($this , $model);
                 });
         } catch (Exception $ex){
             $this->addServerError($ex->getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Получить метод для сохранения
+     */
+    public function getSaveMethodName()
+    {
+        return $this->saveMethodName;
     }
     
     /**
