@@ -1,7 +1,13 @@
 <?php
-namespace core\models\v2;
+namespace core\models\v2\properties\table;
 
-interface IARWithProperties
+/**
+ * Интерфейс для моделей с дополнительными свойствами,
+ * которые хранятся в дополнительной таблице
+ * 
+ * @author Kamaelkz <kamaelkz@yandex.kz>
+ */
+interface IARWithTableProps
 {  
     /**
      * Наименование связи с таблицей атрибутов
@@ -15,7 +21,7 @@ interface IARWithProperties
      * 
      * @return array
      */
-    public function properties();
+    public static function properties();
     
     /**
      * Полный путь до модели дополнительных атрибутов
@@ -23,7 +29,7 @@ interface IARWithProperties
      * 
      * @return string
      */
-    public function getPropertiesClass();
+    public static function getPropertiesClass();
     
     /**
      * Атрибут в модели дополнительных атрибутов, через который
@@ -31,7 +37,7 @@ interface IARWithProperties
      * 
      * @return string
      */
-    public function getLinkAttribute();
+    public static function getLinkAttribute();
             
 }
 

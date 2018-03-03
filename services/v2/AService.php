@@ -29,16 +29,16 @@ abstract class AService extends Component
     /**
      * Получение объекта по идентификатору
      * 
-     * @param string $modelClass
      * @param integer $id
      * @param array $with
      * 
      * @return ActiveRecord
      */
-    public  function getById($modelClass, $id , $with = [], $config = [])
+    public  function getById($id , $with = [], $config = [])
     {       
-        $tableName = $modelClass::tableName();
-        $query = $modelClass::find();
+        $class = $this->getRelatedModelClass();
+        $tableName = $class::tableName();
+        $query = $class::find();
         if(! empty($with)){
             $query->with($with);
         }
@@ -49,6 +49,33 @@ abstract class AService extends Component
         return $query->one();
     }
     
+    /**
+     * Возвращает список по настройкам
+     * 
+     * @param array $params - condition
+     * @param type $config - addditonal settings
+     */
+    public function getItems($params = [], $config = [])
+    {
+        $class = $this->getRelatedModelClass();
+        $q = $class::find();
+        if(isset($config['select'])) {
+            $q->select($config['select']);
+        }
+        $q->andWhere($params);
+        if(isset($config['asArray'])) {
+            $q->asArray();
+        }
+        if(isset($config['orderBy'])) {
+            $q->orderBy($config['orderBy']);
+        }
+        if(isset($config['indexBy'])) {
+            $q->indexBy($config['indexBy']);
+        }
+        
+        return $q->all();
+    }
+       
     /**
      * Сохранение модели
      * 
@@ -67,34 +94,6 @@ abstract class AService extends Component
                     );
             }
         });
-    }
-    
-    /**
-     * Возвращает список по настройкам
-     * 
-     * @param string $modelClass - класс с namespace
-     * @param array $params - condition
-     * @param type $config - addditonal settings
-     */
-    public function getItems($modelClass, $params = [], $config = [])
-    {
-        $table = $modelClass::tableName();
-        $q = $modelClass::find();
-        if(isset($config['select'])) {
-            $q->select($config['select']);
-        }
-        $q->andWhere($params);
-        if(isset($config['asArray'])) {
-            $q->asArray();
-        }
-        if(isset($config['orderBy'])) {
-            $q->orderBy($config['orderBy']);
-        }
-        if(isset($config['indexBy'])) {
-            $q->indexBy($config['indexBy']);
-        }
-        
-        return $q->all();
     }
     
     /**

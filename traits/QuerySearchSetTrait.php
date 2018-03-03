@@ -37,6 +37,7 @@ trait QuerySearchSetTrait
      * @param string $attribute
      * 
      * ```php
+     * Подмена анонимной функцией
      * $custom = [
      *     function($q, $attribute, $out, $out2 , .....) {
      *         $q->andWhere([$attribute => 1]);
@@ -50,11 +51,14 @@ trait QuerySearchSetTrait
      *     true
      * ];
      * $query->pushComposition($custom, 'id');
+     * Подмена функцией класса
      * $custom = [
      *       'compareByLanguage',
      *       'true',
      *       'true'
      * ];
+     * $query->pushComposition($custom, 'id');
+     * Докидывает в набор
      * $query->pushComposition('id');
      * ```
      */
