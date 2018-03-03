@@ -143,7 +143,7 @@ class BaseActiveQuery extends ActiveQuery
     {
         return $this->extendModelFieldsMap;
     }
-
+    
     /**
      * Переопределенный метод создания массива объектов модели
      * из массива запроса
@@ -157,17 +157,21 @@ class BaseActiveQuery extends ActiveQuery
     protected function createModels($rows)
     {
         $models = [];
+        $class = $this->modelClass;
         if ($this->asArray) {
-            if ($this->indexBy === null) {
-                return $rows;
-            }
             foreach ($rows as $row) {
-                $key = $this->getIndexKey($row);
-                $models[$key] = $row;
+                #core\models\v2\properties\column\IARWithColumnProps
+                $this->columnProperiesARAsArray($class, $row);
+                if ($this->indexBy) {
+                    $key = $this->getIndexKey($row);
+                    $models[$key] = $row;
+                } else {
+                    $models[] = $row;
+                }
             }
+            return $models;
         } else {
             /* @var $class ActiveRecord */
-            $class = $this->modelClass;
             if ($this->indexBy === null) {
                 foreach ($rows as $row) {
                     $model = $class::instantiate($row);
@@ -220,6 +224,30 @@ class BaseActiveQuery extends ActiveQuery
         }
         if(count($this->extendModelFieldsMap) > 0){
             $model->setExtendModelFieldsMap($this->extendModelFieldsMap);
+        }
+    }
+    
+    /**
+     * Заполнение дополнительных свойств массива 
+     * core\models\v2\properties\column\IARWithColumnProps
+     * 
+     * @param string $modelClass
+     * @param array $row
+     */
+    protected function columnProperiesARAsArray($modelClass, &$row)
+    {
+        if(method_exists($modelClass, 'properties') && method_exists($modelClass, 'propertiesColumn')) {
+            $properties = $modelClass::properties();
+            $propertiesColumn = $modelClass::propertiesColumn();
+            if($properties && is_array($properties) && ! empty($row[$propertiesColumn])) {
+                $props = \yii\helpers\Json::decode($row[$propertiesColumn]);
+                if($props) {
+                    foreach ($props as $key => $value) {
+                        $row[$key] = $value;
+                    } 
+                }
+                unset($row[$propertiesColumn]);
+            }
         }
     }
 }

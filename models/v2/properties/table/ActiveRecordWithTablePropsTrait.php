@@ -1,21 +1,23 @@
 <?php
-namespace core\models\v2;
+
+namespace core\models\v2\properties\table;
 
 use Yii;
 use yii\base\Exception;
-use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use core\helpers\DbHelper;
 use core\helpers\StringHelper;
 
 /**
- * Актив рекорд с дополнительными атрибутами
- * атрибуты хранятся в другой таблице в горизонтальном виде
+ * Трейт для AR модель с дополнительными свойствами, которые хранятся в дополнительной
+ * таблице в горизонтальном виде
  * 
  * @author Kamaelkz <kamaelkz@yandex.kz>
  */
-abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProperties
-{      
+trait ActiveRecordWithTablePropsTrait
+{
+    use \core\models\v2\properties\ActiveRecordPropsTrait;
+    
     public static function find()
     {
         $q = parent::find();
@@ -27,7 +29,7 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
     
     public function __set($name, $value) 
     {
-        $properties = $this->properties();
+        $properties = static::properties();
         if(in_array($name, $properties)) {
             $this->{$name} = $value;
         } else {
@@ -42,72 +44,12 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
      */
     public function getProperties()
     {
-        return $this->hasMany($this->getPropertiesClass(), [$this->getLinkAttribute() => 'id']);
+        return  $this->hasMany(static::getPropertiesClass(), [
+                    static::getLinkAttribute() => 'id'
+                ])
+                ->asArray();
     }
 
-    public function getAttributes($names = null, $except = []) 
-    {
-        $attributes = parent::getAttributes($names, $except);
-        $properties = $this->properties();
-        if(! is_array($properties)){
-            return $attributes;
-        }
-        foreach ($properties as $property) {
-            $attributes[$property] = $this->{$property};
-        }
-        
-        return $attributes;
-    }
-    
-    public function hasAttribute($name) 
-    {
-        $attributes = $this->attributes();
-        $properties = $this->properties();
-        $merge = ArrayHelper::merge($attributes, $properties);
-        $result = array_flip($merge);
-        
-        return isset($result[$name]);
-    }
-      
-    public function afterFind() 
-    {
-        $parent = parent::afterFind();
-        $propertiesKeys = $this->properties();
-        if(! $propertiesKeys) {
-            return $parent;
-        }
-        $propertiesRelationName = static::getPropertiesRelation();
-        if(empty( $this->{$propertiesRelationName}) ){
-            return $parent;
-        }
-        foreach ($this->{$propertiesRelationName} as $propertyValue) {
-            $value = null;
-            if($propertyValue->value_number) {
-                $value = $propertyValue->value_number;
-            }
-            if($propertyValue->value_string) {
-                $value = $propertyValue->value_string;
-            }
-            if($propertyValue->value_date) {
-                $value = $propertyValue->value_date;
-            }
-            if($propertyValue->value_json_b) {
-                $value = $propertyValue->value_json_b;
-            }
-            if(! in_array($propertyValue->name, $propertiesKeys)) {
-                continue;
-            }
-            if($propertyValue->index > 0){
-                if(!is_array($this->{$propertyValue->name})){
-                    $this->{$propertyValue->name} = [];
-                }
-                $this->{$propertyValue->name}[$propertyValue->index] = $value;
-            } else {
-                $this->{$propertyValue->name} = $value;
-            }
-        }
-    }
-    
     public function save($runValidation = true, $attributeNames = null) 
     {
         return $this->db->transaction(function($db) use($runValidation, $attributeNames){
@@ -118,12 +60,19 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
     public function afterSave($insert, $changedAttributes) 
     {
         $parent = parent::afterSave($insert, $changedAttributes);
-        $properties = $this->properties();
+        $properties = static::properties();
         if(! $properties) {
             return $parent;
         }
-        $propertiesClass = $this->getPropertiesClass();
-        $propertiesClass::deleteAll([$this->getLinkAttribute() => $this->id]);
+        $propertiesClass = static::getPropertiesClass();
+        if(! (method_exists($propertiesClass, 'getPrimaryClass'))) {
+            throw new Exception(Yii::t('app', 'Модель свойств не реализует интерфейс ARProperties'));
+        }
+        $primaryClass = $propertiesClass::getPrimaryClass();
+        if($primaryClass != static::class) {
+            throw new Exception(Yii::t('app', '$propertiesClass::getPrimaryClass() не соответсвует текущей модели.'));
+        }
+        $propertiesClass::deleteAll([static::getLinkAttribute() => $this->id]);
         $insertData = [];
         foreach ($properties as $property) {
             if($this->{$property} === null) {
@@ -143,18 +92,30 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
         if(! $insertData) {
             return $parent;
         }
-        if( !DbHelper::batchInsert(new $propertiesClass(), $insertData, false)) {
+        if(! DbHelper::batchInsert(new $propertiesClass(), $insertData, false)) {
             throw new Exception(Yii::t('app', 'Не удалось сохранить дополнительные атрибуты'));
         }
  
         return $parent;
     }
-        
-    public function fields() 
+          
+    public function afterFind() 
     {
-        $attrs = $this->attributes;
-        unset($attrs['type']);
-        return array_keys($attrs);
+        $parent = parent::afterFind();
+        $propertiesKeys = static::properties();
+        if(! $propertiesKeys) {
+            return $parent;
+        }
+        $propertiesRelationName = static::getPropertiesRelation();
+        if(empty( $this->{$propertiesRelationName}) ){
+            return $parent;
+        }
+        foreach ($this->{$propertiesRelationName} as $item) {
+            if(! in_array($item['name'], $propertiesKeys)) {
+                continue;
+            }
+            $this->setProperty($item);
+        }
     }
     
     /**
@@ -168,7 +129,7 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
     private function getInsertData($property, $value, $index = 0)
     {
         $result = [
-            $this->getLinkAttribute() => $this->id,
+            static::getLinkAttribute() => $this->id,
             'name' => $property,
             'index' => $index
         ];
@@ -194,4 +155,35 @@ abstract class ActiveRecordWithProps extends ActiveRecord implements IARWithProp
         
         return $result;
     }
+    
+    /**
+     * Получение значения свойства
+     * 
+     * @param array $item
+     */
+    private function setProperty($item)
+    {
+        $value = null;
+        if($item['value_number']) {
+            $value = $item['value_number'];
+        }
+        if($item['value_string']) {
+            $value = $item['value_string'];
+        }
+        if($item['value_date']) {
+            $value = $item['value_date'];
+        }
+        if($item['value_json_b']) {
+            $value = $item['value_json_b'];
+        }
+        if($item['index'] > 0){
+            if(! is_array($this->{$item['name']})) {
+                $this->{$item['name']} = [];
+            }
+            $this->{$item['name']}[$item['index']] = $value;
+        } else {
+            $this->{$item['name']} = $value;
+        }
+    }
 }
+

@@ -18,9 +18,7 @@ trait SearchTrait
 {
     public $asArray = false;
     private $_per_page = 30;
-    private $_default_sort = [
-        ID_FIELD => SORT_DESC
-    ];
+    private $_default_sort = [];
     private $_sort_attrbutes = [];
 
     /**
@@ -37,7 +35,7 @@ trait SearchTrait
             'query' => $query,
             'asArray' => $this->isArray(),
             'sort'=>[
-                'defaultOrder' => $this->_default_sort,
+                'defaultOrder' => $this->getDefaultSort(),
                 'attributes' => $this->_sort_attrbutes,
             ],
             'pagination' => [
@@ -127,7 +125,21 @@ trait SearchTrait
     {
         $this->_default_sort = $arr;
     }
-    
+        
+    /**
+     * Получение сортировки по умолчанию
+     * 
+     * @return array
+     */
+    private function getDefaultSort()
+    {
+        if(! $this->hasAttribute('id') || $this->_default_sort) {
+            return $this->_default_sort;
+        }
+        
+        return ['id' => SORT_DESC];
+    }
+
     /**
      * Установка атрибутов сортировки
      * @example :
