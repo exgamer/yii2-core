@@ -23,6 +23,9 @@ abstract class LanguageRequiredValidator extends EachValidator
     public $requiredLanguages = [];
     public $default = true;
     public $languagesArray = [];
+    public $rule = [
+        'string'
+    ];
 
     public function init()
     {
