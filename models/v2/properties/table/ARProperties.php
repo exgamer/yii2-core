@@ -11,15 +11,6 @@ use core\models\ActiveRecord;
  */
 abstract class ARProperties extends ActiveRecord implements \core\interfaces\IBatch
 {
-    /**
-     * Полный путь до основной модели, которую дополняет
-     * AR::class
-     * 
-     * @return string
-     */
-    abstract static function getPrimaryClass();
-    
-    
     public function afterBatch($data) 
     {
         

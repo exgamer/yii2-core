@@ -12,7 +12,28 @@ use core\helpers\ConstHelper;
 class BaseActiveQuery extends ActiveQuery
 {
     use \core\traits\QuerySearchSetTrait;
+    use \core\models\v2\properties\ActiveQueryPropsTrait;
+
+    /**
+     * @see \core\models\v2\properties\ActiveQueryPropsTrait
+     */
+    public function one($db = null)
+    {
+        $this->setModelProperties();
+
+        return parent::one($db);
+    }
     
+    /**
+     * @see \core\models\v2\properties\ActiveQueryPropsTrait
+     */
+    public function all($db = null)
+    {
+        $this->setModelProperties();
+        
+        return parent::all($db);
+    }
+
     /**
      * Масссив для расширения полей возврата для модели
      * передается в модель
@@ -91,12 +112,7 @@ class BaseActiveQuery extends ActiveQuery
      */
     public function checkAttribute($attr_name)
     {
-        static $modelClass;
-        static $instance;
-        
-        if(! $instance || $this->modelClass != $modelClass) {
-            $instance = new $this->modelClass();
-        } 
+        $instance = $this->getModelInstance();
         if (in_array($attr_name, ($instance->attributes()))){
            return true;
         }
@@ -157,20 +173,17 @@ class BaseActiveQuery extends ActiveQuery
     protected function createModels($rows)
     {
         $models = [];
-        $class = $this->modelClass;
         if ($this->asArray) {
-            foreach ($rows as $row) {
-                #core\models\v2\properties\column\IARWithColumnProps
-                $this->columnProperiesARAsArray($class, $row);
-                if ($this->indexBy) {
-                    $key = $this->getIndexKey($row);
-                    $models[$key] = $row;
-                } else {
-                    $models[] = $row;
-                }
+            if ($this->indexBy === null) {
+                return $rows;
             }
-            return $models;
+            foreach ($rows as $row) {
+                $key = $this->getIndexKey($row);
+                $models[$key] = $row;
+            }
         } else {
+            /* @var $class ActiveRecord */
+            $class = $this->modelClass;
             /* @var $class ActiveRecord */
             if ($this->indexBy === null) {
                 foreach ($rows as $row) {
@@ -228,26 +241,19 @@ class BaseActiveQuery extends ActiveQuery
     }
     
     /**
-     * Заполнение дополнительных свойств массива 
-     * core\models\v2\properties\column\IARWithColumnProps
+     * Возвращает экземпляр модели $this->modelClass
      * 
-     * @param string $modelClass
-     * @param array $row
+     * @return ActiveRecord
      */
-    protected function columnProperiesARAsArray($modelClass, &$row)
+    protected function getModelInstance()
     {
-        if(method_exists($modelClass, 'properties') && method_exists($modelClass, 'propertiesColumn')) {
-            $properties = $modelClass::properties();
-            $propertiesColumn = $modelClass::propertiesColumn();
-            if($properties && is_array($properties) && ! empty($row[$propertiesColumn])) {
-                $props = \yii\helpers\Json::decode($row[$propertiesColumn]);
-                if($props) {
-                    foreach ($props as $key => $value) {
-                        $row[$key] = $value;
-                    } 
-                }
-                unset($row[$propertiesColumn]);
-            }
-        }
+        static $modelClass;
+        static $instance;
+        
+        if(! $instance || $this->modelClass != $modelClass) {
+            $instance = new $this->modelClass();
+        } 
+        
+        return $instance;
     }
 }
