@@ -20,6 +20,8 @@ abstract class AModel extends Model implements IHaveService
     use \core\traits\ModelTrait;
 
     protected $saveMethodName = 'save';
+    protected $changeStatusMethodName = 'changeStatus';
+    protected $deleteMethodName = 'delete';
     
     /**
      * @see yii\base\Model
@@ -65,10 +67,76 @@ abstract class AModel extends Model implements IHaveService
     }
     
     /**
+     * Метод для смены статуса
+     * @param type $model
+     * @return boolean
+     * @throws ServerErrorHttpException
+     */
+    public function changeStatus($model)
+    {
+        try {
+                $service = static::getBaseService();
+                if(! $service){
+                    throw new ServerErrorHttpException(
+                            Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
+                    );
+                }
+                return $service->getDb()->transaction(function($db) use($service, $model) {
+                    $method = $this->getChangeStatusMethodName();
+                    return $service->{$method}($this , $model);
+                });
+        } catch (Exception $ex){
+            $this->addServerError($ex->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * метод для удаления
+     * @param type $model
+     * @return boolean
+     * @throws ServerErrorHttpException
+     */
+    public function delete($model)
+    {
+        try {
+                $service = static::getBaseService();
+                if(! $service){
+                    throw new ServerErrorHttpException(
+                            Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
+                    );
+                }
+                return $service->getDb()->transaction(function($db) use($service, $model) {
+                    $method = $this->getDeleteMethodName();
+                    return $service->{$method}($this , $model);
+                });
+        } catch (Exception $ex){
+            $this->addServerError($ex->getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * Получить метод для сохранения
      */
     public function getSaveMethodName()
     {
         return $this->saveMethodName;
+    }
+    
+    /**
+     * Получить метод для смены статуса
+     */
+    public function getChangeStatusMethodName()
+    {
+        return $this->changeStatusMethodName;
+    }
+    
+    /**
+     * Получить метод для удаления
+     */
+    public function getDeleteMethodName()
+    {
+        return $this->deleteMethodName;
     }
 }
