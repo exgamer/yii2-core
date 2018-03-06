@@ -33,6 +33,8 @@ abstract class BaseActiveControllerWithForm extends ActiveController
     
     public $create_form_method = 'save';
     public $update_form_method = 'save';
+    public $delete_form_method = 'delete';
+    public $change_status_form_method = 'changeStatus';
 
     public function init()
     {
