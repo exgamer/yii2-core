@@ -4,7 +4,9 @@ namespace core\validators;
 use Yii;
 use yii\base\Exception;
 use yii\validators\Validator;
+use yii\db\ActiveRecord;
 use core\helpers\StringHelper;
+
 
 /**
  * Валидатор переводит в транслит выбранный атрибут, используя значение $toAttr
@@ -36,16 +38,19 @@ class TranslitValidator extends Validator
     
     public function validateAttribute($model, $attribute)
     {
+        if(! $model instanceof ActiveRecord) {
+            throw new Exception(Yii::t('yii', 'Модель должна быть экземпляром класса yii\db\ActiveRecord.'));
+        }
         if(! $model->hasAttribute($this->source)){
             throw new Exception(Yii::t('yii', 'Объект не имеет данного свойства.'));
         }
         if($model->{$attribute} && ! $this->changeOnEdit){
             return;
         }
-        $string = $model->{$this->source};
-        if(is_array($string)){
-            $string = reset($string);
+        $result = $model->{$this->source};
+        if(is_array($result)){
+            $result = reset($result);
         }
-        $model->{$attribute} = StringHelper::translit($string);
+        $model->{$attribute} = StringHelper::translit($result);
     }
 }
