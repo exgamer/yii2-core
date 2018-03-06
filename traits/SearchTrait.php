@@ -149,11 +149,11 @@ trait SearchTrait
      *       'default' => SORT_ASC,
      * ],
      * 
-     * @param array $arr
+     * @param array $sort
      */
-    public function setSortAttributes(array $arr)
+    public function setSortAttributes(array $sort)
     {
-        $this->_sort_attrbutes;
+        $this->_sort_attrbutes = $sort;
     }
     
     /**
