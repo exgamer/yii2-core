@@ -7,6 +7,7 @@ use yii\base\Model;
 use Codeception\Lib\Interfaces\ActiveRecord;
 use yii\web\ServerErrorHttpException;
 use core\models\ActiveRecord as AR;
+use core\forms\v2\IHaveService;
 
 /**
  * Базовая модель 
@@ -14,7 +15,7 @@ use core\models\ActiveRecord as AR;
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
-abstract class AModel extends Model
+abstract class AModel extends Model implements IHaveService
 {
     use \core\traits\ModelTrait;
 
@@ -47,7 +48,7 @@ abstract class AModel extends Model
             return false ;
         }
         try {
-                $service = $this->getBaseService();
+                $service = static::getBaseService();
                 if(! $service){
                     throw new ServerErrorHttpException(
                             Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
@@ -70,11 +71,4 @@ abstract class AModel extends Model
     {
         return $this->saveMethodName;
     }
-    
-    /**
-     * основной сервис дял работы с моделью
-     * 
-     * @example return service;
-     */
-    abstract function getBaseService();
 }
