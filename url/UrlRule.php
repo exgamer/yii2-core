@@ -20,6 +20,7 @@ class UrlRule extends \yii\rest\UrlRule
         'GET,HEAD {id}' => 'view',
         'POST batch'=>'batch-insert',
         'POST' => 'create',
+        'POST change-status/{id}' => 'change-status',
         'GET,HEAD' => 'index',
         '{id}' => 'options',
         '' => 'options',

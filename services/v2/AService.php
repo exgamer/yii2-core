@@ -116,6 +116,8 @@ abstract class AService extends Component
                             ])
                     );
             }
+            
+            return true;
         });
     }
     
