@@ -74,6 +74,8 @@ abstract class AFormService extends AService
                     ])
             );
         }
+        
+        return true;
     }
 
     
