@@ -23,6 +23,7 @@ trait QuerySearchSetTrait
     public $composition = [
         'id',
         'status',
+        'is_deleted',
         'caption' => [
             'compareByLanguage',
             'true',
