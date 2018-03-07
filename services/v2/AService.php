@@ -16,6 +16,15 @@ abstract class AService extends Component
 {          
     public $errors=[];
     
+    private $_tableName;
+    private $_class;
+    
+    public function init()
+    {
+        parent::init();
+        list($this->_class, $this->_tableName) = $this->getModelInfo();
+    }
+
     /**
      * @return \yii\db\Connection
      */
@@ -34,21 +43,35 @@ abstract class AService extends Component
      * 
      * @return ActiveRecord
      */
-    public  function getById($id , $with = [], $config = [])
-    {       
-        $class = $this->getRelatedModelClass();
-        $tableName = $class::tableName();
+    public function getById($id , $with = [], $config = [])
+    {           
+        return $this->getItem(["{$this->_tableName}.id" => $id], $with, $config);
+    }
+    
+    /**
+     * Возвращает модель по условию
+     * 
+     * @param array $condition
+     * @param array $with
+     * @param array $config
+     * 
+     * @return ActiveRecord
+     */
+    public function getItem($params = [], $with = [], $config = [])
+    {
+        $class = $this->_class;
         $query = $class::find();
         if(! empty($with)){
             $query->with($with);
         }
-        $query->where(["{$tableName}.id" => $id]);
+        $query->where($params);
         if(isset($config['asArray'])) {
             $query->asArray();
         }
+        
         return $query->one();
     }
-    
+
     /**
      * Возвращает список по настройкам
      * 
@@ -57,7 +80,7 @@ abstract class AService extends Component
      */
     public function getItems($params = [], $config = [])
     {
-        $class = $this->getRelatedModelClass();
+        $class = $this->_class;
         $q = $class::find();
         if(isset($config['select'])) {
             $q->select($config['select']);
@@ -101,7 +124,6 @@ abstract class AService extends Component
      */
     public abstract function getRelatedModelClass();
 
-
     /**
      * Получить ошибки
      * 
@@ -110,6 +132,19 @@ abstract class AService extends Component
     public function getErrors()
     {
         return $this->errors;
+    }
+    
+    /**
+     * Информация о связанной моделе
+     * 
+     * @return array
+     */
+    protected function getModelInfo()
+    { 
+        $class = $this->getRelatedModelClass();
+        $tableName = $class::tableName();
+        
+        return [$class, $tableName];
     }
 }
 
