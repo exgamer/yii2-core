@@ -54,7 +54,7 @@ abstract class AFormService extends AService
     {
         if ($model->{$this->modelStatusFieldName} == $status){
             throw new Exception(
-                    Yii::t('service','Объект уже в состоянии '.$status)
+                    Yii::t('service','Объект уже в состоянии ').$status
             );
         }
         $model->{$this->modelStatusFieldName} = $status;
