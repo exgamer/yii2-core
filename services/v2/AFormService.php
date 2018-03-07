@@ -1,17 +1,24 @@
 <?php
 namespace core\services\v2;
 
+use Yii;
 use core\services\v2\AService;
 use yii\db\ActiveRecord;
 use core\forms\v2\AModel;
+use yii\base\Exception;
+use yii\helpers\Json;
 
 /**
  * Базовый Service для моделей связанных с формами
+ * 
+ * @property string $modelStatusFieldName наименование атрибута статуса
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
 abstract class AFormService extends AService
 {          
+    public $modelStatusFieldName = 'status';
+    
     /**
      * Сохранение формы
      * 
@@ -39,7 +46,37 @@ abstract class AFormService extends AService
         return $model;
     }
     
-        
+    /**
+     * смена статуса
+     * @param AR $model
+     */
+    public function changeStatus($model, $status)
+    {
+        if ($model->{$this->modelStatusFieldName} == $status){
+            throw new Exception(
+                    Yii::t('service','Объект уже в состоянии '.$status)
+            );
+        }
+        $model->{$this->modelStatusFieldName} = $status;
+        $this->saveModel($model);
+    }
+    
+    /**
+     * удаление
+     * @param AR $model
+     */
+    public function delete($model)
+    {
+        if (! $model->delete()){
+            throw new Exception(
+                    Yii::t('service','Не удалось удалить модель - {errors}', [
+                        'errors' => Json::encode($model->getErrors())
+                    ])
+            );
+        }
+    }
+
+    
     /**
      * Дополнительные действия с моделью перед сохранением
      * @param BaseForm $form класс для работы
