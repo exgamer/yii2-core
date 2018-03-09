@@ -6,6 +6,7 @@ use yii\base\Component;
 use yii\db\ActiveRecord;
 use yii\db\Exception;
 use yii\helpers\Json;
+use core\helpers\v2\DbHelper;
 
 /**
  * Базовый Service для моделей
@@ -33,6 +34,15 @@ abstract class AService extends Component
         $modelClass = $this->getRelatedModelClass();
         
         return $modelClass::getDb();
+    }
+    
+    /**
+     * Мультивставка
+     * @param array $data
+     */
+    public function batchData($data)
+    {
+        DbHelper::batch($this->_class, $data);
     }
     
     /**
