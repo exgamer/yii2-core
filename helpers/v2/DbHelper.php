@@ -32,16 +32,16 @@ class DbHelper
                 $updateData[] = array_values($row);
                 continue;
             }
+            # TODO придумать как убрирать из вставки поля типа id 
             # id на вставку не идет
-            if (isset($row['id'])){
-                unset($row['id']);
-            }
+            unset($row['id']);
             $insertData[] = array_values($row);
         }
         if (!empty($updateData)){
             static::batchUpdate($class, $fields, $updateData);
         }
         if (!empty($insertData)){
+            # TODO придумать как убрирать из вставки поля типа id 
             # id на вставку не идет
             if (($key = array_search('id', $fields)) !== false) {
                 unset($fields[$key]);
