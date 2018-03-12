@@ -18,8 +18,8 @@ trait SearchTrait
 {
     public $asArray = false;
     private $_per_page = 30;
-    private $_default_sort = [];
-    private $_sort_attrbutes = [];
+    private $_default_sort = null;
+    private $_sort_attrbutes = null;
 
     /**
      * Общий метод получения отфильтрованных данных
@@ -35,8 +35,8 @@ trait SearchTrait
             'query' => $query,
             'asArray' => $this->isArray(),
             'sort'=>[
+                'attributes' => $this->getSortAttributes(),
                 'defaultOrder' => $this->getDefaultSort(),
-                'attributes' => $this->_sort_attrbutes,
             ],
             'pagination' => [
                 'pageSize' => $this->_per_page,
@@ -136,6 +136,9 @@ trait SearchTrait
         if(! $this->hasAttribute('id') || $this->_default_sort) {
             return $this->_default_sort;
         }
+        if(! isset($this->_sort_attrbutes['id'])) {
+            return;
+        }
         
         return ['id' => SORT_DESC];
     }
@@ -156,6 +159,20 @@ trait SearchTrait
         $this->_sort_attrbutes = $sort;
     }
     
+    /**
+     * Возвращает атрибуты для сортировки
+     * 
+     * @return array
+     */
+    public function getSortAttributes()
+    {
+        if(! $this->_sort_attrbutes) {
+            $this->_sort_attrbutes = array_keys($this->attributes);
+        }
+        
+        return $this->_sort_attrbutes;
+    }
+
     /**
      * Если доступ через api отключаем ключ название формы
      * 
