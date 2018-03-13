@@ -67,12 +67,12 @@ abstract class AService extends Component
      * 
      * @return ActiveRecord
      */
-    public function getItem($params = [], $with = [], $config = [])
+    public function getItem($params = [], $config = [])
     {
         $class = $this->_class;
         $query = $class::find();
-        if(! empty($with)){
-            $query->with($with);
+        if(isset($config['with']) && !empty($config['with'])) {
+            $query->with($config['with']);
         }
         $query->where($params);
         if(isset($config['asArray'])) {
@@ -96,6 +96,9 @@ abstract class AService extends Component
             $q->select($config['select']);
         }
         $q->andWhere($params);
+        if(isset($config['with']) && !empty($config['with'])) {
+            $q->with($config['with']);
+        }
         if(isset($config['asArray'])) {
             $q->asArray();
         }
