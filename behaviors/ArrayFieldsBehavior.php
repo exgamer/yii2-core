@@ -41,7 +41,8 @@ class ArrayFieldsBehavior extends Behavior
             return null;
         }
         foreach ($this->attrs as $attr) {
-            if(! is_string($this->owner->{$attr})){
+            if(! is_string($this->owner->{$attr}) || empty($this->owner->{$attr})){
+                $this->owner->{$attr} = null;
                 continue;
             }
             
@@ -59,6 +60,17 @@ class ArrayFieldsBehavior extends Behavior
         }
         foreach ($this->attrs as $attr) {
             if (!is_array($this->owner->{$attr})){
+                $this->owner->{$attr} = null;
+                continue;
+            }
+            $values = array_filter(
+                        $this->owner->{$attr} ,
+                        function($v) {
+                            return ! empty($v) ? $v : null;
+                        }
+            );
+            if(! $values) {
+                $this->owner->{$attr} = null;
                 continue;
             }
 

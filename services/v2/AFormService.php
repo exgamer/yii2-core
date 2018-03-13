@@ -32,16 +32,18 @@ abstract class AFormService extends AService
         if($model === null){
             $model = new $modelClass();
         }
+        #флаг для понимания операции создания/редактирования
+        $is_new_record = $model->isNewRecord;
         #заполнениe атрибутов
         $model->load($form->attributes, '');
-        $this->beforeModelSave($form, $model);
+        $this->beforeModelSave($form, $model, $is_new_record);
         if (! $model->save()) {
             $form->addErrors($model->getErrors());
             
             return false;
         }
         $this->setPrimaryKeysToFrom($form, $model);
-        $this->afterModelSave($form, $model);
+        $this->afterModelSave($form, $model, $is_new_record);
         
         return $model;
     }
@@ -78,27 +80,6 @@ abstract class AFormService extends AService
         return true;
     }
 
-    
-    /**
-     * Дополнительные действия с моделью перед сохранением
-     * @param BaseForm $form класс для работы
-     * @param ActiveRecord $model
-     */
-    protected function beforeModelSave($form , $model)
-    {
-        
-    }
-    
-    /**
-     * Дополнительные действия с моделью после сохранения
-     * @param BaseForm $form класс для работы
-     * @param ActiveRecord $model
-     */
-    protected function afterModelSave($form , $model)
-    {
-
-    }
-    
     /**
      * Выставляем полученные примари ключи в форму
      * @param AR $form
@@ -113,4 +94,20 @@ abstract class AFormService extends AService
             }
         }
     }
+    
+    /**
+     * Дополнительные действия с моделью перед сохранением
+     * @param BaseForm $form класс для работы
+     * @param ActiveRecord $model
+     * @param boolean $is_new_record
+     */
+    protected function beforeModelSave($form , $model, $is_new_record){}
+    
+    /**
+     * Дополнительные действия с моделью после сохранения
+     * @param BaseForm $form класс для работы
+     * @param ActiveRecord $model
+     * @param boolean $is_new_record
+     */
+    protected function afterModelSave($form , $model, $is_new_record){}
 }
