@@ -103,8 +103,8 @@ trait StandardRulesTrait
     public static function getBooleanArray()
     {
         return [
-            0 => Yii::t('common', 'Нет'),
             1 => Yii::t('common', 'Да'),
+            0 => Yii::t('common', 'Нет'),
         ];
     }
 }

@@ -136,7 +136,7 @@ trait SearchTrait
         if(! $this->hasAttribute('id') || $this->_default_sort) {
             return $this->_default_sort;
         }
-        if(! isset($this->_sort_attrbutes['id'])) {
+        if(! isset($this->_sort_attrbutes['id']) && (array_search('id', $this->_sort_attrbutes) === false)) {
             return;
         }
         
