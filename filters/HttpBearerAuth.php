@@ -37,11 +37,20 @@ class HttpBearerAuth extends Base
             if ($identity === null) {
                 $this->handleFailure($response, Yii::t('api' ,'Пользователь не найден.'));
             }
+            $this->afterAuthenticate($identity);
             
             return $identity;
         }
 
         return null;
+    }
+    
+    /**
+     * Раздные доп де1йствия после авторизации
+     */
+    public function afterAuthenticate($identity)
+    {
+        
     }
     
     /**
