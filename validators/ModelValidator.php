@@ -3,6 +3,7 @@ namespace core\validators;
 
 use Yii;
 use yii\validators\Validator;
+use yii\helpers\Json;
 
 /**
  * Универсальный валидатор для возможности валидации массивов данных с помощью моделей
