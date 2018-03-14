@@ -22,13 +22,13 @@ class ModelValidator extends Validator
     
     public function validateAttribute($model, $attribute)
     {
-        $model = new $this->modelClass();
-        $model->load($model->{$attribute}, '');
-        if (! $model->validate()){
-            $this->addError($model, $attribute,  Json::encode($model->getErrors()));
+        $validatorModel = new $this->modelClass();
+        $validatorModel->load($model->{$attribute}, '');
+        if (! $validatorModel->validate()){
+            $this->addError($model, $attribute,  Json::encode($validatorModel->getErrors()));
             return false;
         }
-        $this->{$attribute} = $model->attributes;
+        $model->{$attribute} = $validatorModel->attributes;
         
         return true;
     }
@@ -40,7 +40,7 @@ class ModelValidator extends Validator
         if (! $model->validate()){
             return [Yii::t('api', Json::encode($model->getErrors())), []];
         }
-        $this->{$attribute} = $model->attributes;
+        $value = $model->attributes;
         
         return true;
     }
