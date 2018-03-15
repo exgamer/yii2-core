@@ -40,7 +40,7 @@ class ModelValidator extends Validator
         }
         $dataArray = [];
         foreach ($model->{$attribute} as $data) {
-            $result = $this->validateModel($model->{$attribute});
+            $result = $this->validateModel($data);
             if ($result == false){
                 $this->addError($model, $attribute,  Json::encode($this->errors));
                 return false;
