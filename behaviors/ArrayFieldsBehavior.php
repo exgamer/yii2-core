@@ -59,8 +59,7 @@ class ArrayFieldsBehavior extends Behavior
             return null;
         }
         foreach ($this->attrs as $attr) {
-            if (!is_array($this->owner->{$attr})){
-                $this->owner->{$attr} = null;
+            if (! is_array($this->owner->{$attr})){
                 continue;
             }
             $values = array_filter(
