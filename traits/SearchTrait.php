@@ -16,7 +16,7 @@ use core\interfaces\IBaseSearch;
  */
 trait SearchTrait 
 {
-    public $asArray = false;
+    private $_asArray = false;
     private $_per_page = 30;
     private $_default_sort = null;
     private $_sort_attrbutes = null;
@@ -39,7 +39,7 @@ trait SearchTrait
                 'defaultOrder' => $this->getDefaultSort(),
             ],
             'pagination' => [
-                'pageSize' => $this->_per_page,
+                'pageSize' => $this->getPerPage(),
                 'pageSizeParam' => false,
                 'forcePageParam' => false
             ],
@@ -62,11 +62,7 @@ trait SearchTrait
      */
     public function isArray()
     {
-        if (isset($_GET['asArray']) && $_GET['asArray']=='true'){
-            return $this->asArray = true;
-        }
-        
-        return $this->asArray;
+        return (boolean) Yii::$app->request->get('asArray', false);
     }
     
     /**
@@ -116,6 +112,16 @@ trait SearchTrait
         $this->_per_page = (int) $v;
     }
     
+    /**
+     * Получение кол-во элементов на страницу
+     * 
+     * @return integer
+     */
+    public function getPerPage()
+    {
+        return (int) Yii::$app->request->get('per-page', $this->_per_page);
+    }
+
     /**
      * Установка сортировки по умолчанию
      * 
