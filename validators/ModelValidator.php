@@ -12,6 +12,8 @@ use yii\helpers\Json;
 class ModelValidator extends Validator
 {
     public $modelClass;
+    public $asArray = false;
+    public $errors = [];
     
     public function init()
     {
@@ -19,30 +21,62 @@ class ModelValidator extends Validator
         if ($this->modelClass === null) {
             $this->modelClass = Yii::t('yii', '{attribute} must set a model class.');
         }
+        if ($this->asArray) {
+            $this->asArray = true;
+        }
     }
     
     public function validateAttribute($model, $attribute)
     {
-        $validatorModel = new $this->modelClass();
-        $validatorModel->load($model->{$attribute}, '');
-        if (! $validatorModel->validate()){
-            $this->addError($model, $attribute,  Json::encode($validatorModel->getErrors()));
-            return false;
+        if (! $this->asArray){
+            $result = $this->validateModel($model->{$attribute});
+            if ($result == false){
+                $this->addError($model, $attribute,  Json::encode($this->errors));
+                return false;
+            } 
+            $model->{$attribute} = $result;
+            
+            return true;
         }
-        $model->{$attribute} = $validatorModel->attributes;
+        $dataArray = [];
+        foreach ($model->{$attribute} as $data) {
+            $result = $this->validateModel($model->{$attribute});
+            if ($result == false){
+                $this->addError($model, $attribute,  Json::encode($this->errors));
+                return false;
+            } 
+            $dataArray[] = $result;
+        }
+        if (! empty($dataArray)){
+            $model->{$attribute} = $dataArray;
+        }
         
         return true;
     }
+//    
+//    protected function validateValue($value)
+//    {
+//        
+//        $model = new $this->modelClass();
+//        $model->load($value, '');
+//        if (! $model->validate()){
+//            return [Yii::t('api', Json::encode($model->getErrors())), []];
+//        }
+//        $value = $model->attributes;
+//        
+//        return true;
+//    }
     
-    protected function validateValue($value)
+    protected function validateModel($value)
     {
-        $model = new $this->modelClass();
-        $model->load($value, '');
-        if (! $model->validate()){
-            return [Yii::t('api', Json::encode($model->getErrors())), []];
+        $validatorModel = new $this->modelClass();
+        $validatorModel->load($value, '');
+        if (! $validatorModel->validate()){
+            $this->errors[] = $validatorModel->getErrors();
+
+            return false;
         }
-        $value = $model->attributes;
         
-        return true;
+        return $validatorModel->attributes;
     }
 }
