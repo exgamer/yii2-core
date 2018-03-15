@@ -4,6 +4,7 @@ namespace core\traits;
 
 use Yii;
 use core\data\CacheDataProvider;
+use yii\data\ActiveDataProvider;
 use yii\base\Exception;
 use core\interfaces\IBaseSearch;
 
@@ -16,6 +17,7 @@ use core\interfaces\IBaseSearch;
  */
 trait SearchTrait 
 {
+    
     private $_asArray = false;
     private $_per_page = 30;
     private $_default_sort = null;
@@ -31,19 +33,34 @@ trait SearchTrait
     {
         $this->checkModel();
         $query = static::find();
-        $dataProvider = new CacheDataProvider([
-            'query' => $query,
-            'asArray' => $this->isArray(),
-            'sort'=>[
-                'attributes' => $this->getSortAttributes(),
-                'defaultOrder' => $this->getDefaultSort(),
-            ],
-            'pagination' => [
-                'pageSize' => $this->getPerPage(),
-                'pageSizeParam' => false,
-                'forcePageParam' => false
-            ],
-        ]);
+        if ($this->isCashe()){
+            $dataProvider = new CacheDataProvider([
+                'query' => $query,
+                'asArray' => $this->isArray(),
+                'sort'=>[
+                    'attributes' => $this->getSortAttributes(),
+                    'defaultOrder' => $this->getDefaultSort(),
+                ],
+                'pagination' => [
+                    'pageSize' => $this->getPerPage(),
+                    'pageSizeParam' => false,
+                    'forcePageParam' => false
+                ],
+            ]);
+        }else{
+            $dataProvider = new ActiveDataProvider([
+                'query' => $query,
+                'sort'=>[
+                    'attributes' => $this->getSortAttributes(),
+                    'defaultOrder' => $this->getDefaultSort(),
+                ],
+                'pagination' => [
+                    'pageSize' => $this->getPerPage(),
+                    'pageSizeParam' => false,
+                    'forcePageParam' => false
+                ],
+            ]);
+        }
 
         $this->load($params);
         if (! $this->validate()) {
@@ -54,6 +71,15 @@ trait SearchTrait
         $this->addFilters($query);
 
         return $dataProvider;
+    }
+    
+    /**
+     * Использовать ли cashedataprovider
+     * @return boolean
+     */
+    public function isCashe()
+    {
+        return true;
     }
     
     /**
