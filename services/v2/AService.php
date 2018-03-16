@@ -119,7 +119,7 @@ abstract class AService extends Component
      * @param boolean $validation
      * @throws Exception
      */
-    public function saveModel(ActiveRecord $model, $validation = true)
+    public function saveModel($model, $validation = true)
     {
         return $this->getDb()->transaction(function($db) use($model, $validation){
             if(! $model->save($validation)){
