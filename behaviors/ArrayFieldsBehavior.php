@@ -22,7 +22,7 @@ class ArrayFieldsBehavior extends Behavior
     
     public function events() 
     {
-        return [
+        $events =  [
             ActiveRecord::EVENT_BEFORE_INSERT => 'setValue',
             ActiveRecord::EVENT_AFTER_VALIDATE => 'setValue',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'setValue',
@@ -30,6 +30,11 @@ class ArrayFieldsBehavior extends Behavior
             ActiveRecord::EVENT_AFTER_INSERT => 'getValue',
             ActiveRecord::EVENT_AFTER_UPDATE => 'getValue',
         ];
+        if($this->owner->scenario == ActiveRecord::SCENARIO_SEARCH) {
+            unset($events[ActiveRecord::EVENT_AFTER_VALIDATE]);
+        }
+        
+        return $events;
     }
 
     /**

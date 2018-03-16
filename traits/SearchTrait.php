@@ -6,6 +6,8 @@ use yii\base\Exception;
 use core\interfaces\IBaseSearch;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
+use core\models\ActiveRecord;
+
 /**
  * Трейт для поиска по моделям
  *
@@ -49,6 +51,7 @@ trait SearchTrait
             $params['asArray'] = $this->isArray();
         }
         $dataProvider = new $dataProviderClass($params);
+        $this->scenario = ActiveRecord::SCENARIO_SEARCH;
         $this->load($params);
         if (! $this->validate()) {
             $query->where('0 = 1');

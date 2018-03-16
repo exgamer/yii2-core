@@ -13,9 +13,8 @@ use Yii;
  */
 class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
 {
-
     const STATE_DELETED = 3;
-
+    #v1 поиск
     const FILTER_SCENARIO = "filter";
     const FILTER_ONE_SCENARIO = "filter_one";
 
@@ -23,8 +22,10 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
     const SCENARIO_UPDATE = 'update';
     
     const SCRNARIO_EXCEL_IMPORT = 'excel_import';
-    
+    #импорт данных
     const SCENARIO_TRANSFER = 'transfer';
+    #v2 поиск
+    const SCENARIO_SEARCH = 'search';
     
     /**
      * Масссив для расширения полей возврата из ответа
@@ -63,7 +64,8 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
                 self::SCENARIO_UPDATE => $this->attributesForSave(self::SCENARIO_UPDATE),
                 self::FILTER_SCENARIO => $this->filterAttributes(),
                 self::FILTER_ONE_SCENARIO => $this->filterOneAttributes(),
-                self::SCENARIO_TRANSFER => $this->attributesForSave(self::SCENARIO_TRANSFER)
+                self::SCENARIO_TRANSFER => $this->attributesForSave(self::SCENARIO_TRANSFER),
+                self::SCENARIO_SEARCH => array_values($this->attributes())
             ]);
         return $scenarios;
 
