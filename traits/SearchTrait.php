@@ -1,13 +1,11 @@
 <?php
-
 namespace core\traits;
 
 use Yii;
-use core\data\CacheDataProvider;
-use yii\data\ActiveDataProvider;
 use yii\base\Exception;
 use core\interfaces\IBaseSearch;
-
+use yii\helpers\Inflector;
+use yii\helpers\StringHelper;
 /**
  * Трейт для поиска по моделям
  *
@@ -33,35 +31,24 @@ trait SearchTrait
     {
         $this->checkModel();
         $query = static::find();
+        $dataProviderClass = '\yii\data\ActiveDataProvider';
+        $params = [
+            'query' => $query,
+            'sort'=>[
+                'attributes' => $this->getSortAttributes(),
+                'defaultOrder' => $this->getDefaultSort(),
+            ],
+            'pagination' => [
+                'pageSize' => $this->getPerPage(),
+                'pageSizeParam' => false,
+                'forcePageParam' => false
+            ],
+        ];
         if ($this->isCashe()){
-            $dataProvider = new CacheDataProvider([
-                'query' => $query,
-                'asArray' => $this->isArray(),
-                'sort'=>[
-                    'attributes' => $this->getSortAttributes(),
-                    'defaultOrder' => $this->getDefaultSort(),
-                ],
-                'pagination' => [
-                    'pageSize' => $this->getPerPage(),
-                    'pageSizeParam' => false,
-                    'forcePageParam' => false
-                ],
-            ]);
-        }else{
-            $dataProvider = new ActiveDataProvider([
-                'query' => $query,
-                'sort'=>[
-                    'attributes' => $this->getSortAttributes(),
-                    'defaultOrder' => $this->getDefaultSort(),
-                ],
-                'pagination' => [
-                    'pageSize' => $this->getPerPage(),
-                    'pageSizeParam' => false,
-                    'forcePageParam' => false
-                ],
-            ]);
+            $dataProviderClass = '\core\data\CacheDataProvider';
+            $params['asArray'] = $this->isArray();
         }
-
+        $dataProvider = new $dataProviderClass($params);
         $this->load($params);
         if (! $this->validate()) {
             $query->where('0 = 1');
@@ -223,5 +210,14 @@ trait SearchTrait
         }
         
         return parent::formName();
+    }
+    
+    /**
+     * Переопредено для возможности использования searchв монго 
+     * @see yii\mongodb\ActiveRecord
+     */
+    public static function collectionName()
+    {
+        return Inflector::camel2id(StringHelper::basename(get_parent_class()), '_');
     }
 }
