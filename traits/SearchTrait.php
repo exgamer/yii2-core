@@ -34,7 +34,7 @@ trait SearchTrait
         $this->checkModel();
         $query = static::find();
         $dataProviderClass = '\yii\data\ActiveDataProvider';
-        $params = [
+        $dpConfig = [
             'query' => $query,
             'sort'=>[
                 'attributes' => $this->getSortAttributes(),
@@ -48,9 +48,9 @@ trait SearchTrait
         ];
         if ($this->isCashe()){
             $dataProviderClass = '\core\data\CacheDataProvider';
-            $params['asArray'] = $this->isArray();
+            $dpConfig['asArray'] = $this->isArray();
         }
-        $dataProvider = new $dataProviderClass($params);
+        $dataProvider = new $dataProviderClass($dpConfig);
         $this->scenario = ActiveRecord::SCENARIO_SEARCH;
         $this->load($params);
         if (! $this->validate()) {
