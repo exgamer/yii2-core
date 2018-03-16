@@ -18,7 +18,7 @@ use core\models\ActiveRecord;
 trait SearchTrait 
 {
     
-    private $_asArray = false;
+    public $asArray = false;
     private $_per_page = 30;
     private $_default_sort = null;
     private $_sort_attrbutes = null;
@@ -78,7 +78,11 @@ trait SearchTrait
      */
     public function isArray()
     {
-        return (boolean) Yii::$app->request->get('asArray', false);
+        if (Yii::$app->request instanceof \yii\web\Request){
+            return (boolean) Yii::$app->request->get('asArray', false);
+        }
+        
+        return $this->asArray;
     }
     
     /**
@@ -135,7 +139,11 @@ trait SearchTrait
      */
     public function getPerPage()
     {
-        return (int) Yii::$app->request->get('per-page', $this->_per_page);
+        if (Yii::$app->request instanceof \yii\web\Request){
+            return (int) Yii::$app->request->get('per-page', $this->_per_page);
+        }
+        
+        return $this->_per_page;
     }
 
     /**
