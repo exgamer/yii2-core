@@ -14,7 +14,10 @@
       "issues": "https://github.com/exgamer/yii2-core/issues",
       "source": "https://github.com/exgamer/yii2-core"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2": "*"
+    },
     "autoload": {
         "psr-4": {
             "core\\": ""
@@ -22,7 +25,7 @@
     },
     "extra": {
         "branch-alias": {
-            "stable-master": "1.0.190-stable"
+            "dev-master": "1.0.190"
         }
     }
 }
