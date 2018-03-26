@@ -87,7 +87,7 @@ abstract class ClosureTable extends ActiveRecord
             ORDER BY ot.level DESC
         ";
                
-        $command = self::getDb()->createCommand($sql);
+        $command = static::getDb()->createCommand($sql);
         $command->bindValue(':ID', $this->id);
         $result = $command->queryAll();
         
@@ -157,7 +157,7 @@ abstract class ClosureTable extends ActiveRecord
            WHERE d.id_parent = :ID and x.id_parent IS NULL
         ";
            
-        $command = self::getDb()->createCommand($sql);
+        $command = static::getDb()->createCommand($sql);
         $command->bindValue(':ID' ,$this->id);
         $command->execute();
 
