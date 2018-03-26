@@ -3,7 +3,6 @@ namespace core\services\v2;
 
 use Yii;
 use core\services\v2\AService;
-use yii\db\ActiveRecord;
 use core\forms\v2\AModel;
 use yii\base\Exception;
 use yii\helpers\Json;
@@ -26,7 +25,7 @@ abstract class AFormService extends AService
      * @param ActiveRecord $model модель данных - передается при редактировании
      * @return ActiveRecord
      */
-    public function save(AModel $form , ActiveRecord $model = null)
+    public function save(AModel $form , $model = null)
     {
         $modelClass = $this->getRelatedModelClass();
         if($model === null){
