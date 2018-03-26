@@ -22,7 +22,7 @@
     },
     "extra": {
         "branch-alias": {
-            "stable-master": "1.0.190"
+            "stable-master": "1.0.190-stable"
         }
     }
 }
