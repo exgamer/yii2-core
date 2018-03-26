@@ -14,7 +14,7 @@
       "issues": "https://github.com/exgamer/yii2-core/issues",
       "source": "https://github.com/exgamer/yii2-core"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "yiisoft/yii2": "*"
     },
@@ -23,10 +23,9 @@
             "core\\": ""
         }
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.186-dev"
+            "dev-master": "1.0.187"
         }
     }
 }
