@@ -139,16 +139,17 @@ trait RemoteBaseActiveQueryTrait
             }
         }
         $expand=null;
-        if ($this->with && is_array($this->with)){
-            $model = new  $this->modelClass();
-            $remoteRelations = $model::getRemoteModelRelationsMap();
-            if ($remoteRelations && is_array($remoteRelations)){
-                foreach ($remoteRelations as $name) {
-                    if (isset($this->with[$name]) ||  ($exp && in_array($name, $exp))){
-                        $expand.=$name.',';
-                    }
+        $model = new  $this->modelClass();
+        $remoteRelations = $model::getRemoteModelRelationsMap();
+        if ($remoteRelations && is_array($remoteRelations)){
+            foreach ($remoteRelations as $name) {
+                if (isset($this->with[$name]) ||  ($exp && in_array($name, $exp))){
+                    $expand.=$name.',';
                 }
             }
+        }
+        if (! $this->with){
+            $this->with($exp);
         }
         if ($expand){
             $this->remoteWhere['expand'] = trim($expand,',');
