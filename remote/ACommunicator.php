@@ -73,7 +73,7 @@ abstract class ACommunicator  extends ABaseCommunicator
             }
         }
         // used for acess from console application
-        if (Yii::$app->controller instanceof \yii\console\Controller && defined('PDS_USER_TOKEN_HEADER')){
+        if (defined('PDS_USER_TOKEN_HEADER')){
             
             return PDS_USER_TOKEN_HEADER;
         }
