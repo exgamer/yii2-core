@@ -11,7 +11,8 @@ use core\forms\v2\IHaveService;
 
 /**
  * Базовая модель 
- * @property string $relatedModel Основная модель связанная с данной формой
+ * @property string $saveMethodName метод сервиса для сохранения
+ * @property string $transactionalSave использовать ли транзакцию при вызове сохранения
  * 
  * @author CitizenZet <exgamer@live.ru>
  */
@@ -20,6 +21,7 @@ abstract class AModel extends Model implements IHaveService
     use \core\traits\ModelTrait;
 
     protected $saveMethodName = 'save';
+    protected $transactionalSave = true;
     
     /**
      * @see yii\base\Model
@@ -54,10 +56,14 @@ abstract class AModel extends Model implements IHaveService
                             Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
                     );
                 }
-                return $service->getDb()->transaction(function($db) use($service, $model) {
-                    $method = $this->getSaveMethodName();
-                    return $service->{$method}($this , $model);
-                });
+                $method = $this->getSaveMethodName();
+                if ($this->transactionalSave){
+                    return $service->getDb()->transaction(function($db) use($service, $model, $method) {
+                        return $service->{$method}($this , $model);
+                    });
+                }
+
+                return $service->{$method}($this , $model);
         } catch (Exception $ex){
             $this->addServerError($ex->getMessage());
             return false;
