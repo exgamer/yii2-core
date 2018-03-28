@@ -148,7 +148,7 @@ trait RemoteBaseActiveQueryTrait
                 }
             }
         }
-        if (! $this->with){
+        if (! $this->with && $exp){
             $this->with($exp);
         }
         if ($expand){
