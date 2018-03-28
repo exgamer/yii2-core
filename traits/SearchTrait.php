@@ -49,7 +49,7 @@ trait SearchTrait
             $this->dataProviderClass = '\core\data\CacheDataProvider';
             $dpConfig['asArray'] = $this->isArray();
         }
-        $dataProviderClass = $this->dataProviderClass;
+        $dataProviderClass = $this->getDataProviderClass();
         $dataProvider = new $dataProviderClass($dpConfig);
         $this->scenario = ActiveRecord::SCENARIO_SEARCH;
         $this->load($params);
@@ -61,6 +61,15 @@ trait SearchTrait
         $this->addFilters($query);
 
         return $dataProvider;
+    }
+    
+    /**
+     * Получить класс дата провеидера
+     * @return string
+     */
+    public function getDataProviderClass()
+    {
+        return '\yii\data\ActiveDataProvider';
     }
     
     /**
