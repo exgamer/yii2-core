@@ -45,10 +45,10 @@ trait SearchTrait
                 'forcePageParam' => false
             ],
         ];
-        if ($this->isCashe()){
-            $this->dataProviderClass = '\core\data\CacheDataProvider';
-            $dpConfig['asArray'] = $this->isArray();
-        }
+//        if ($this->isCashe()){
+//            $this->dataProviderClass = '\core\data\CacheDataProvider';
+//            $dpConfig['asArray'] = $this->isArray();
+//        }
         $dataProviderClass = $this->getDataProviderClass();
         $dataProvider = new $dataProviderClass($dpConfig);
         $this->scenario = ActiveRecord::SCENARIO_SEARCH;
