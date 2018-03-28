@@ -17,7 +17,7 @@ use core\models\ActiveRecord;
  */
 trait SearchTrait 
 {
-    
+    public $dataProviderClass = '\yii\data\ActiveDataProvider';
     public $asArray = false;
     private $_per_page = 30;
     private $_default_sort = null;
@@ -33,7 +33,6 @@ trait SearchTrait
     {
         $this->checkModel();
         $query = static::find();
-        $dataProviderClass = '\yii\data\ActiveDataProvider';
         $dpConfig = [
             'query' => $query,
             'sort'=>[
@@ -47,9 +46,10 @@ trait SearchTrait
             ],
         ];
         if ($this->isCashe()){
-            $dataProviderClass = '\core\data\CacheDataProvider';
+            $this->dataProviderClass = '\core\data\CacheDataProvider';
             $dpConfig['asArray'] = $this->isArray();
         }
+        $dataProviderClass = $this->dataProviderClass;
         $dataProvider = new $dataProviderClass($dpConfig);
         $this->scenario = ActiveRecord::SCENARIO_SEARCH;
         $this->load($params);
