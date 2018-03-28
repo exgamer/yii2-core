@@ -148,9 +148,11 @@ trait RemoteBaseActiveQueryTrait
                 }
             }
         }
-        if (! $this->with && $exp){
-            $this->with($exp);
-        }
+//        if (! $this->with && $expand){
+//            $b = trim($expand,',');
+//            $with = split($b, ',');
+//            $this->with($with);
+//        }
         if ($expand){
             $this->remoteWhere['expand'] = trim($expand,',');
         }
