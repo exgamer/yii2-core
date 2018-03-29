@@ -494,5 +494,12 @@ trait RemoteBaseActiveQueryTrait
     {
         $this->splittedRemoteActiveRecordClass = $splittedRemoteActiveRecordClass;
     }
+    
+    public function addRemoteWhere($key, $value)
+    {
+        if ($value){
+            $this->remoteWhere[$key] = $value;
+        }
+    }
 }
 
