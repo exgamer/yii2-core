@@ -88,6 +88,8 @@ class RemoteActiveDataProvider extends ActiveDataProvider
         $q->joinWith = $query->joinWith;
         $q->on = $query->on;
         $q->alias = $query->alias;
+        $q->groupBy = $query->groupBy;
+        
         return $q->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
     }
 }
