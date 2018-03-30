@@ -11,10 +11,13 @@ use core\helpers\v2\DbHelper;
 /**
  * Базовый Service для моделей
  * 
+ * @property boolean $transactionalModelSave признак показывающий использовать ли транзакцию при созхранении модели
+ * 
  * @author CitizenZet <exgamer@live.ru>
  */
 abstract class AService extends Component
 {          
+    protected $transactionalModelSave = true;
     public $errors=[];
     
     private $_tableName;
@@ -121,17 +124,29 @@ abstract class AService extends Component
      */
     public function saveModel($model, $validation = true)
     {
-        return $this->getDb()->transaction(function($db) use($model, $validation){
-            if(! $model->save($validation)){
-                    throw new Exception(
-                            Yii::t('service','Не удалось сохранить модель - {errors}', [
-                                'errors' => Json::encode($model->getErrors())
-                            ])
-                    );
-            }
-            
-            return true;
-        });
+        if ($this->transactionalSave){
+            return $this->getDb()->transaction(function($db) use($model, $validation){
+                if(! $model->save($validation)){
+                        throw new Exception(
+                                Yii::t('service','Не удалось сохранить модель - {errors}', [
+                                    'errors' => Json::encode($model->getErrors())
+                                ])
+                        );
+                }
+
+                return true;
+            });
+        }
+        
+        if(! $model->save($validation)){
+                throw new Exception(
+                        Yii::t('service','Не удалось сохранить модель - {errors}', [
+                            'errors' => Json::encode($model->getErrors())
+                        ])
+                );
+        }
+
+        return true;
     }
     
     /**
