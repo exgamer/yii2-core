@@ -124,7 +124,7 @@ abstract class AService extends Component
      */
     public function saveModel($model, $validation = true)
     {
-        if ($this->transactionalSave){
+        if ($this->transactionalModelSave){
             return $this->getDb()->transaction(function($db) use($model, $validation){
                 if(! $model->save($validation)){
                         throw new Exception(
