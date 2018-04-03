@@ -361,8 +361,6 @@ trait RemoteBaseActiveQueryTrait
                             #мержим релеишены как объекты
                             $lR = $localData[$key]->getRelatedRecords();
                             $rR = $rData->getRelatedRecords();
-                            print_r($lR);
-                            print_r($rR);
                             $this->mergeRelations($lR, $rR, $name);
                             $localData[$key]->populateRelation($name, $lR[$name]);
                         }
