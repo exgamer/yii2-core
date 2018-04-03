@@ -58,7 +58,10 @@ abstract class AService extends Component
      */
     public function getById($id , $with = [], $config = [])
     {           
-        return $this->getItem(["{$this->_tableName}.id" => $id], $with, $config);
+        if (! empty($with)){
+            $config['with'] = $with;
+        }
+        return $this->getItem(["{$this->_tableName}.id" => $id],  $config);
     }
     
     /**
