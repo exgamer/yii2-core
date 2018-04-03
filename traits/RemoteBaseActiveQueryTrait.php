@@ -138,12 +138,22 @@ trait RemoteBaseActiveQueryTrait
                 $exp = $temp;
             }
         }
-        $expand=null;
+        $relationsNames = [];
+        if ($this->with){
+            foreach ($this->with as $key => $value) {
+                if (is_object($value)){
+                    $relationsNames[] = $key;
+                }else{
+                    $relationsNames[] = $value;
+                }
+            }
+        }
+        $expand = null;
         $model = new  $this->modelClass();
         $remoteRelations = $model::getRemoteModelRelationsMap();
         if ($remoteRelations && is_array($remoteRelations)){
-            foreach ($remoteRelations as $name) {
-                if (isset($this->with[$name]) ||  ($exp && in_array($name, $exp))){
+            foreach ($remoteRelations as $key => $name) {
+                if (in_array($name, $relationsNames) ||  ($exp && in_array($name, $exp))){
                     $expand.=$name.',';
                 }
             }
