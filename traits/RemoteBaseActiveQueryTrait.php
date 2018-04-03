@@ -355,12 +355,14 @@ trait RemoteBaseActiveQueryTrait
                         if (is_array($data)){
                             $lR = $localData[$key][$name];
                             $rR = $rData[$name];
-                            $this->mergeRelations($lR, $rR, $name);
+                            $this->mergeRelations($lR, $rR);
                             $localData[$key][$name] = $lR;
                         }else{
                             #мержим релеишены как объекты
                             $lR = $localData[$key]->getRelatedRecords();
                             $rR = $rData->getRelatedRecords();
+                            print_r($lR);
+                            print_r($rR);
                             $this->mergeRelations($lR, $rR, $name);
                             $localData[$key]->populateRelation($name, $lR[$name]);
                         }
@@ -393,8 +395,14 @@ trait RemoteBaseActiveQueryTrait
      * @param array $remoteRelations
      * @param string $relationName
      */
-    protected function mergeRelations(&$localRealtions,$remoteRelations, $relationName)
+    protected function mergeRelations(&$localRealtions,$remoteRelations, $relationName = null)
     {
+        if (! $relationName){
+            if (is_array($localRealtions) && is_array($remoteRelations)){
+                $localRealtions = array_merge($localRealtions, $remoteRelations);
+            }
+            return;
+        }
         $remoterelation=[];
         if (isset($remoteRelations[$relationName])){
             $remoterelation = $remoteRelations[$relationName];
