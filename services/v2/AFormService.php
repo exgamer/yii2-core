@@ -53,6 +53,7 @@ abstract class AFormService extends AService
      */
     public function changeStatus($model, $status)
     {
+        $this->beforeChangeState($model , $status);
         if ($model->{$this->modelStatusFieldName} == $status){
             throw new Exception(
                     Yii::t('service','Объект уже в состоянии ').$status
@@ -60,6 +61,7 @@ abstract class AFormService extends AService
         }
         $model->{$this->modelStatusFieldName} = $status;
         $this->saveModel($model,false);
+        $this->afterChangeState($model , $status);
     }
     
     /**
@@ -93,6 +95,20 @@ abstract class AFormService extends AService
             }
         }
     }
+    
+    /**
+     * Дополнительные действия перед сменой статуса
+     * @param ActiveRecord $model
+     * @param integer $status
+     */
+    protected function beforeChangeState($model , $status){}
+    
+    /**
+     * Дополнительные действия после смены статуса
+     * @param ActiveRecord $model
+     * @param integer $status
+     */
+    protected function afterChangeState($model, $status){}
     
     /**
      * Дополнительные действия с моделью перед сохранением
