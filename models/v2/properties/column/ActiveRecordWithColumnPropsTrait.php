@@ -39,6 +39,17 @@ trait ActiveRecordWithColumnPropsTrait
             parent::__set($name, $value);
         }
     }
+
+    public function fields() 
+    {
+        $f = parent::fields();
+        $column = $this->propertiesColumn();
+        unset($f[$column]);
+        return array_merge(
+            $f,
+            $this->properties()
+        );
+    }
      
     /**
      * Получение значения свойства

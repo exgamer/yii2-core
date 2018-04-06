@@ -2,8 +2,6 @@
 
 namespace core\models\v2\properties;
 
-use yii\helpers\ArrayHelper;
-
 /**
  * Трейт для моделей с дополнительными свойствами
  * 
@@ -11,28 +9,21 @@ use yii\helpers\ArrayHelper;
  */
 trait ActiveRecordPropsTrait
 {   
-    public function getAttributes($names = null, $except = []) 
+    public function attributes()
     {
-        $attributes = parent::getAttributes($names, $except);
-        $properties = static::properties();
-        if(! is_array($properties)){
-            return $attributes;
-        }
-        foreach ($properties as $property) {
-            $attributes[$property] = $this->{$property};
-        }
-
-        return $attributes;
+        $a = parent::attributes();
+        $column = $this->propertiesColumn();
+        unset($a[$column]);
+        
+        return array_merge( $a, static::properties() );
     }
     
-    public function hasAttribute($name) 
+    public function toArray(array $fields = [], array $expand = [], $recursive = true)
     {
-        $attributes = $this->attributes();
-        $properties = static::properties();
-        $merge = ArrayHelper::merge($attributes, $properties);
-        $result = array_flip($merge);
+        $data = parent::toArray($fields, $expand, $recursive);
+        $column = $this->propertiesColumn();
+        unset($a[$column]);
         
-        return isset($result[$name]);
+        return $data;
     }
 }
-
