@@ -73,7 +73,7 @@ trait QuerySearchSetTrait
             $this->composition[$attribute] = $value;
         }
         $index = array_search ($attribute, $this->composition);
-        if($index === null) {
+        if($index === false) {
             return;
         }
         unset($this->composition[$index]);
