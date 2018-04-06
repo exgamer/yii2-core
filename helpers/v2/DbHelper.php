@@ -45,6 +45,7 @@ class DbHelper
             # id на вставку не идет
             if (($key = array_search('id', $fields)) !== false) {
                 unset($fields[$key]);
+                $fields = array_values($fields);
             }
             static::batchInsert($class, $fields, $insertData);
         }
