@@ -120,16 +120,19 @@ trait SearchTrait
      */
     public function getSelectedFilterCount()
     {
-        $attrs = $this->attributes;
         $request = Yii::$app->request->get($this->formName());
-        $count = 0;
-        foreach ($attrs as $key => $attr) {
-            if(isset($request[$key]) && $attr !== ''){
-                $count++;
-            } 
+        $result = [];
+        foreach ($this->getValidators() as $validator) {
+            $attrs = $validator->attributes;
+            foreach ($attrs as $attr) {
+                if(! isset($request[$attr]) || $request[$attr] == null) {
+                    continue;
+                }
+                $result[$attr] = true;
+            }  
         }
-        
-        return $count;
+                
+        return count($result);
     }
     
     /**

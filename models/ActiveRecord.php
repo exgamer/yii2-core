@@ -57,16 +57,18 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
     
     public function scenarios()
     {
-
-        $scenarios = array_merge(parent::scenarios(),
+        $scenarios = array_merge(
+            parent::scenarios(),
             [
                 self::SCENARIO_INSERT => $this->attributesForSave(self::SCENARIO_INSERT),
                 self::SCENARIO_UPDATE => $this->attributesForSave(self::SCENARIO_UPDATE),
                 self::FILTER_SCENARIO => $this->filterAttributes(),
                 self::FILTER_ONE_SCENARIO => $this->filterOneAttributes(),
                 self::SCENARIO_TRANSFER => $this->attributesForSave(self::SCENARIO_TRANSFER),
-                self::SCENARIO_SEARCH => array_values($this->attributes())
-            ]);
+            ]
+        );
+        $scenarios[self::SCENARIO_SEARCH] = $scenarios[self::SCENARIO_DEFAULT];
+        
         return $scenarios;
 
     }

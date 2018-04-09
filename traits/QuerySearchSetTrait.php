@@ -71,12 +71,12 @@ trait QuerySearchSetTrait
         }
         if(isset($this->composition[$attribute])) {
             $this->composition[$attribute] = $value;
-        }
-        $index = array_search ($attribute, $this->composition);
-        if($index === null) {
             return;
         }
-        unset($this->composition[$index]);
+        $index = array_search ($attribute, $this->composition);
+        if($index !== false) {
+            unset($this->composition[$index]);
+        }
         $this->composition[$attribute] = $value;
     }
 
