@@ -176,20 +176,12 @@ trait QuerySearchSetTrait
      */
     public function compareByLanguage($model, $attr, $lower = true, $like = true)
     {
-//        $tableName = $model::tableName();
         $language = Yii::$app->language;
-//        $fn = null;
-//        if($lower) {
-//            $fn = 'lower';
-//        }
         $operator = '=';
         if($like) {
             $operator = 'like';
         }
         $this->setJsonbCondition($model, $language, $lower, $operator, $attr);
-//        $this->andWhere("{$fn}({$tableName}.{$attr} ->> '{$language}') {$operator} {$fn}(:PARAM)", [
-//                ':PARAM' => "%{$model->$attr}%"
-//        ]);
     }
     
     /**
@@ -219,7 +211,7 @@ trait QuerySearchSetTrait
         $attr = null;
         $attrsCount = count($attrs);
         $i = 1;
-        foreach ($attrs as $key) {
+        foreach ($attrs as $ind => $key) {
             if ($i == $attrsCount){
                 $attr = $key;
             }
@@ -230,6 +222,10 @@ trait QuerySearchSetTrait
                 continue;
             }
             $i++;
+        }
+        #если у модели нет аттрибута значит заменяем его на имя поля
+        if (! property_exists($model, $attr)){
+            $attr = $jsonbFieldName;
         }
         if ($model->{$attr} !== null){
             $this->andWhere("{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :PARAM",[
