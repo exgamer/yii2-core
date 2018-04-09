@@ -164,7 +164,7 @@ trait QuerySearchSetTrait
             }
         }
     }
-
+    
     /**
      * Поиск по языку в мультиязычный jsonb полях
      * 
@@ -176,19 +176,20 @@ trait QuerySearchSetTrait
      */
     public function compareByLanguage($model, $attr, $lower = true, $like = true)
     {
-        $tableName = $model::tableName();
+//        $tableName = $model::tableName();
         $language = Yii::$app->language;
-        $fn = null;
-        if($lower) {
-            $fn = 'lower';
-        }
+//        $fn = null;
+//        if($lower) {
+//            $fn = 'lower';
+//        }
         $operator = '=';
         if($like) {
             $operator = 'like';
         }
-        $this->andWhere("{$fn}({$tableName}.{$attr} ->> '{$language}') {$operator} {$fn}(:PARAM)", [
-                ':PARAM' => "%{$model->$attr}%"
-        ]);
+        $this->setJsonbCondition($model, $language, $lower, $operator, $attr);
+//        $this->andWhere("{$fn}({$tableName}.{$attr} ->> '{$language}') {$operator} {$fn}(:PARAM)", [
+//                ':PARAM' => "%{$model->$attr}%"
+//        ]);
     }
     
     /**
@@ -204,9 +205,13 @@ trait QuerySearchSetTrait
      * @param string $operator
      * @param string $jsonbFieldName
      */
-    public function setJsonbCondition($model, $attrs, $operator = '=', $jsonbFieldName = 'properties')
+    public function setJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties')
     {
         $tableName = $model::tableName();
+        $fn = null;
+        if($lower) {
+            $fn = 'lower';
+        }
         $jsonPath = null;
         if (is_string($attrs)){
               $attrs = [$attrs];
@@ -227,8 +232,8 @@ trait QuerySearchSetTrait
             $i++;
         }
         if ($model->{$attr} !== null){
-            $this->andWhere("{$tableName}.{$jsonbFieldName} {$jsonPath} {$operator} :PARAM",[
-                ':PARAM' => $model->{$attr}
+            $this->andWhere("{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :PARAM",[
+                ':PARAM' => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
             ]);
         }
     }
