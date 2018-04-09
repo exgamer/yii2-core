@@ -209,7 +209,7 @@ trait QuerySearchSetTrait
         $tableName = $model::tableName();
         $jsonPath = null;
         if (is_string($attrs)){
-              $attrs[] = $attrs;
+              $attrs = [$attrs];
         }
         $attr = null;
         $attrsCount = count($attrs);
