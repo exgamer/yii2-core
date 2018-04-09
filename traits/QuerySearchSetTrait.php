@@ -24,6 +24,11 @@ trait QuerySearchSetTrait
         'id',
         'status',
         'is_deleted',
+        'properties' => [
+            'setJsonbCondition',
+            '=',
+            'properties'
+        ],
         'caption' => [
             'compareByLanguage',
             'true',
@@ -188,16 +193,42 @@ trait QuerySearchSetTrait
     
     /**
      * Добавить в запрос поиск по jsonb полю
-     * @param AQ $query
-     * @param string $attribute
+     * 
+     * ПРИМЕР поиска по jsonb с вложенными массивами
+     * $query->setJsonbCondition($this, ['key_1','key_2','final_key']);
+     * поиск с 1 вложенностью
+     * $query->setJsonbCondition($this, 'final_key');
+     * 
+     * @param ActiveRecord $model
+     * @param string||string[] $attr
      * @param string $operator
      * @param string $jsonbFieldName
      */
-    public function setJsonbCondition(&$query, $attribute, $operator = '=', $jsonbFieldName = 'properties')
+    public function setJsonbCondition($model, $attrs, $operator = '=', $jsonbFieldName = 'properties')
     {
-        if ($this->{$attribute} !== null){
-            $query->andWhere("{$jsonbFieldName} ->> '{$attribute}' {$operator} :PARAM",[
-                ':PARAM' => $this->{$attribute}
+        $tableName = $model::tableName();
+        $jsonPath = null;
+        if (is_string($attrs)){
+              $attrs[] = $attrs;
+        }
+        $attr = null;
+        $attrsCount = count($attrs);
+        $i = 1;
+        foreach ($attrs as $key) {
+            if ($i == $attrsCount){
+                $attr = $key;
+            }
+            if ($i < $attrsCount){
+                $jsonPath.=" -> '{$key}'";
+            }else{
+                $jsonPath.=" ->> '{$key}'";
+                continue;
+            }
+            $i++;
+        }
+        if ($model->{$attr} !== null){
+            $this->andWhere("{$tableName}.{$jsonbFieldName} {$jsonPath} {$operator} :PARAM",[
+                ':PARAM' => $model->{$attr}
             ]);
         }
     }
