@@ -133,6 +133,22 @@ trait SearchTrait
     }
     
     /**
+     * Добавить в запрос поиск по jsonb полю
+     * @param AQ $query
+     * @param string $attribute
+     * @param string $operator
+     * @param string $jsonbFieldName
+     */
+    public function setJsonbCondition(&$query, $attribute, $operator = '=', $jsonbFieldName = 'properties')
+    {
+        if ($this->{$attribute} !== null){
+            $query->andWhere("{$jsonbFieldName} ->> '{$attribute}' {$operator} :PARAM",[
+                ':PARAM' => $this->{$attribute}
+            ]);
+        }
+    }
+    
+    /**
      * Установка кол-ва элементов на страницу
      * @param integer $v
      */
