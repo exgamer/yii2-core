@@ -62,6 +62,8 @@ abstract class AFormService extends AService
         $model->{$this->modelStatusFieldName} = $status;
         $this->saveModel($model,false);
         $this->afterChangeState($model , $status);
+        
+        return $model;
     }
     
     /**
