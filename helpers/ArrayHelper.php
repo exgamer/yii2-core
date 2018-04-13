@@ -151,7 +151,23 @@ class ArrayHelper extends BaseArrayHelper
      * @param array $arr
      * @return type
      */
-    public static function isAssoc($arr){
+    public static function isAssoc($arr)
+    {
             return array_keys($arr) !== range(0, count($arr) - 1);
+    }
+        
+    /**
+     * Возвращает значения массива через разделитель
+     * 
+     * @param array $array
+     * @param string $delimiter
+     */
+    public static function getValuesAsString($array, $delimiter = ', ')
+    {
+        if(! $array) {
+            return;
+        }
+        
+        return implode($delimiter, $array);
     }
 }
