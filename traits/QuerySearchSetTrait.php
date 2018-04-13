@@ -219,7 +219,7 @@ trait QuerySearchSetTrait
             $i++;
         }
         #если у модели нет аттрибута значит заменяем его на имя поля
-        if (! property_exists($model, $attr)){
+        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
             $attr = $jsonbFieldName;
         }
         if ($model->{$attr} !== null){
