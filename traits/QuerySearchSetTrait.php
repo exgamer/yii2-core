@@ -24,11 +24,6 @@ trait QuerySearchSetTrait
         'id',
         'status',
         'is_deleted',
-        'properties' => [
-            'setJsonbCondition',
-            '=',
-            'properties'
-        ],
         'caption' => [
             'compareByLanguage',
             'true',
