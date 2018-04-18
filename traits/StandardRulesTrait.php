@@ -73,7 +73,7 @@ trait StandardRulesTrait
      */
     private static function getLabelByArray($key, $array_fn)
     {
-        $list = self::{$array_fn}();
+        $list = static::{$array_fn}();
         if(! isset($list[$key])){
             return null;
         }
