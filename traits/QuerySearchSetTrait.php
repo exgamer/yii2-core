@@ -226,8 +226,8 @@ trait QuerySearchSetTrait
             if ($lower){
                 $model->{$attr} = mb_strtolower($model->{$attr});
             }
-            $this->andWhere("{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :PARAM",[
-                ':PARAM' => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
+            $this->andWhere("{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}",[
+                ":{$attr}" => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
             ]);
         }
     }
