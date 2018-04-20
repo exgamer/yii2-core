@@ -3,6 +3,7 @@ namespace core\validators;
 
 use Yii;
 use yii\validators\EachValidator;
+use yii\base\Exception;
 
 /**
  * Валидатор обязательных мультиязычных полей
