@@ -67,6 +67,38 @@ abstract class AFormService extends AService
     }
     
     /**
+     * Смена значения аттрибута с историей
+     * @param AR $model
+     * @param string $attribute имя атрибута
+     * @param string $value значение
+     * @param string $history_attribute название атрибута для хранения истории
+     * 
+     * @return boolean
+     */
+    public function changeAttributeWithHistory($model , $attribute, $value, $history_attribute = null)
+    {
+        if (! $history_attribute){
+            $history_attribute = $attribute.'_change_history';
+        }
+        $history = [
+                'from' => $model->{$attribute},
+                'to' => $value,
+                'date' => date('Y-m-d H:i:s')
+        ];
+        if (isset(Yii::$app->user)){
+            $history['person_id'] = Yii::$app->user->identity->id;
+        }
+        if ($model->{$history_attribute}){
+            $model->{$history_attribute} = array_merge($model->{$history_attribute}, [$history]);
+        }else{
+            $model->{$history_attribute} = [$history];
+        }
+        $model->{$attribute} = $value;
+        
+        return $this->saveModel($model);
+    }
+    
+    /**
      * удаление
      * @param AR $model
      */
