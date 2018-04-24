@@ -72,6 +72,7 @@ abstract class AFormService extends AService
      */
     public function delete($model)
     {
+        $this->beforeDelete($model);
         if (! $model->delete()){
             throw new Exception(
                     Yii::t('service','Не удалось удалить модель - {errors}', [
@@ -97,6 +98,12 @@ abstract class AFormService extends AService
             }
         }
     }
+    
+    /**
+     * Дополнительные действия перед удалением
+     * @param ActiveRecord $model
+     */
+    protected function beforeDelete($model){}
     
     /**
      * Дополнительные действия перед сменой статуса
