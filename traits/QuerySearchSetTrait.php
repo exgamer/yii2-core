@@ -194,6 +194,23 @@ trait QuerySearchSetTrait
      */
     public function setJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties')
     {
+        $condition = $this->getJsonbCondition($model, $attrs, $lower, $operator, $jsonbFieldName);
+        if (! $condition){
+            return;
+        }
+        $this->andWhere($condition['condition'],$condition['params']);
+    }
+    
+    /**
+     * Получить массив для построения условия
+     * @param ActiveRecord $model
+     * @param string||string[] $attr
+     * @param string $operator
+     * @param string $jsonbFieldName
+     * @return array||null
+     */
+    public function getJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties')
+    {
         $tableName = $model::tableName();
         $fn = null;
         if($lower) {
@@ -226,9 +243,14 @@ trait QuerySearchSetTrait
             if ($lower){
                 $model->{$attr} = mb_strtolower($model->{$attr});
             }
-            $this->andWhere("{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}",[
-                ":{$attr}" => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
-            ]);
+            return [
+                'condition' => "{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}",
+                'params' => [
+                    ":{$attr}" => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
+                ]
+            ];
         }
+        
+        return null;
     }
 }

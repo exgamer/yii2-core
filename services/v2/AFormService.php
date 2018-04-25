@@ -77,6 +77,22 @@ abstract class AFormService extends AService
      */
     public function changeAttributeWithHistory($model , $attribute, $value, $history_attribute = null)
     {
+        $model = $this->setAttributeWithHistory($model , $attribute, $value, $history_attribute);
+        
+        return $this->saveModel($model);
+    }
+    
+    /**
+     * установка значения аттрибута с историей
+     * @param AR $model
+     * @param string $attribute имя атрибута
+     * @param string $value значение
+     * @param string $history_attribute название атрибута для хранения истории
+     * 
+     * @return boolean
+     */
+    public function setAttributeWithHistory($model , $attribute, $value, $history_attribute = null)
+    {
         if (! $history_attribute){
             $history_attribute = $attribute.'_change_history';
         }
@@ -95,7 +111,7 @@ abstract class AFormService extends AService
         }
         $model->{$attribute} = $value;
         
-        return $this->saveModel($model);
+        return $model;
     }
     
     /**
