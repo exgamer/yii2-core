@@ -198,7 +198,12 @@ abstract class BaseQuery
         $sql = $this->sql();
         $sql.=' LIMIT '.$this->pageSize;
         $sql.=' OFFSET '.($this->pageSize * $this->currentPage);
-        $data = $this->getOriginDb()->createCommand($sql)->queryAll();
+        $command = $this->getOriginDb()->createCommand($sql);
+        $params = $this->getSqlParams();
+        if ( $params ){
+            $command->bindValues($params);
+        }
+        $data = $command->queryAll();
         
         return $data;
     }
@@ -285,6 +290,11 @@ abstract class BaseQuery
     public function noDbConnectionExceptionActions($data, $exception)
     {
         
+    }
+    
+    public function getSqlParams()
+    {
+        return null;
     }
     
     /**

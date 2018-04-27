@@ -199,6 +199,7 @@ trait QuerySearchSetTrait
             return;
         }
         $this->andWhere($condition['condition'],$condition['params']);
+
     }
     
     /**
