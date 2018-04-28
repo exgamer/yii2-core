@@ -115,7 +115,7 @@ abstract class BaseCollectorController extends BaseCommandController
                 'collector' => $collector,
                 'timeStart' => $timeStart->format('H:i:s'),
                 'timeEnd' => $timeEnd->format('H:i:s'),
-                'execTime' => $execTime->format('%H:%I:%s'),
+                'execTime' => $execTime->format('%H:%I:%S'),
             ])
         );
     }
