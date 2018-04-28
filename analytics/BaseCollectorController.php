@@ -110,7 +110,7 @@ abstract class BaseCollectorController extends BaseCommandController
         $execTime = $timeStart->diff($timeEnd);
         $this->outputSuccess(Yii::t(
             'console',
-            '{collector} завершил сбор данных... (Начало: {timeStart}, Окончание: {timeEnd}, Время выполнения: {execTime})',
+            '{collector} завершил сбор данных... (Start: {timeStart}, End: {timeEnd}, Execution time: {execTime})',
             [
                 'collector' => $collector,
                 'timeStart' => $timeStart->format('H:i:s'),
