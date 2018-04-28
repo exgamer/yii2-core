@@ -94,11 +94,30 @@ abstract class BaseCollectorController extends BaseCommandController
             $this->queryList = explode(',', $this->queries);
         }
         $model = $this->getCollector($collectorClass);
-        $this->outputSuccess(Yii::t('console','{collector} запущен...', ['collector' => $collector]));
+
+        $timeStart = new \DateTime();
+        $this->outputSuccess(Yii::t('console','{collector} запущен... (Время: {time})',
+            [
+                'collector' => $collector,
+                'time' => $timeStart->format('H:i:s'),
+            ])
+        );
         if (! $model->collect()) {
             VarDumper::dump($model->getErrors());
         }
-        $this->outputSuccess(Yii::t('console','{collector} завершил сбор данных...', ['collector' => $collector]));
+
+        $timeEnd = new \DateTime();
+        $execTime = $timeStart->diff($timeEnd);
+        $this->outputSuccess(Yii::t(
+            'console',
+            '{collector} завершил сбор данных... (Начало: {timeStart}, Окончание: {timeEnd}, Время выполнения: {execTime})',
+            [
+                'collector' => $collector,
+                'timeStart' => $timeStart->format('H:i:s'),
+                'timeEnd' => $timeEnd->format('H:i:s'),
+                'execTime' => $execTime->format('%H:%I:%s'),
+            ])
+        );
     }
     
     /**
