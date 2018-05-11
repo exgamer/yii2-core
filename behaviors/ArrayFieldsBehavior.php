@@ -5,6 +5,7 @@ use Yii;
 use yii\base\Behavior;
 use core\models\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use core\interfaces\IBaseSearch;
 
 /**
  * Поведение для полей являющихся массивом []
@@ -30,7 +31,10 @@ class ArrayFieldsBehavior extends Behavior
             ActiveRecord::EVENT_AFTER_INSERT => 'getValue',
             ActiveRecord::EVENT_AFTER_UPDATE => 'getValue',
         ];
-        if($this->owner->scenario == ActiveRecord::SCENARIO_SEARCH) {
+        #для отключения события при валидации модели поиска
+        #проблема с массивами постгреса - поисковый параметр массив преобразуется
+        #в строку
+        if($this->owner instanceof IBaseSearch) {
             unset($events[ActiveRecord::EVENT_AFTER_VALIDATE]);
         }
         
