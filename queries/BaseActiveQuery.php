@@ -121,26 +121,6 @@ class BaseActiveQuery extends ActiveQuery
     }
     
     /**
-    * Переопределeно потому что при создании в оригинале не self, а ActiveQuery
-    * @see \yii\db\ActiveRecord::viaTable()
-     */
-    public function viaTable($tableName, $link, callable $callable = null)
-    {
-        $relation = new self(get_class($this->primaryModel), [
-            'from' => [$tableName],
-            'link' => $link,
-            'multiple' => true,
-            'asArray' => true,
-        ]);
-        $this->via = $relation;
-        if ($callable !== null) {
-            call_user_func($callable, $relation);
-        }
-
-        return $this;
-    }
-    
-    /**
      * Добвление раширяющего поля в массив $extendModelFieldsMap
      * 
      * @param string $name
