@@ -64,6 +64,7 @@ trait SearchTrait
             
             return $dataProvider;
         }
+        $this->eagerLoading($query);
         $this->addFilters($query);
 
         return $dataProvider;
