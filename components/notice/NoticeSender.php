@@ -8,7 +8,7 @@ use yii\base\Exception;
 use core\components\notice\NoticeMessage;
 use core\components\notice\NoticeMessageException;
 use core\components\notice\EmailHandler;
-use core\components\notice\PusheHandler;
+use core\components\notice\PushHandler;
 
 /**
  * Класс агрегатор отправки увемдолений
@@ -92,7 +92,7 @@ class NoticeSender extends \yii\base\Component
         $class = null;
         switch ($type) {
             case self::PUSH :
-                $class = PusheHandler::class;
+                $class = PushHandler::class;
                 break;
             case self::EMAIL :
                 $class = EmailHandler::class;

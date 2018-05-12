@@ -22,6 +22,12 @@ trait SearchTrait
     private $_per_page = 30;
     private $_default_sort = null;
     private $_sort_attrbutes = null;
+    
+    /**
+     * Массив параметров переданных в параметры запроса expand
+     * @var array 
+     */
+    private $_expandParams = [];
 
     /**
      * Общий метод получения отфильтрованных данных
@@ -102,6 +108,26 @@ trait SearchTrait
     {
         
     } 
+    
+    /**
+     * Жадная загрузка экспандов
+     * 
+     * @param ActiveQuery $query
+     */
+    private function eagerLoading(&$query)
+    {
+        $this->setExpandParams();
+        $extraFields = $this->extraFields();
+        if(! $extraFields) {
+            return;
+        }
+        foreach($extraFields as $filed) {
+            if(! $this->isExpandField($filed)) {
+                continue;
+            }
+            $query->with($filed);
+        }
+    }
     
     /**
      * Проверка экзмпляра
@@ -242,5 +268,34 @@ trait SearchTrait
     public static function collectionName()
     {
         return Inflector::camel2id(StringHelper::basename(get_parent_class()), '_');
+    }
+      
+    /**
+     * Устанавливает массив элементов из параметра expand запроса
+     */
+    private function setExpandParams()
+    {
+        if($this->_expandParams){
+            return null;
+        }
+        $params = explode(",", Yii::$app->request->get("expand"));
+        $values = array_values($params);
+        $this->_expandParams = array_combine($values, $values);
+    }
+    
+    /**
+     * Проверяет передан ли атрибут в параметр expand
+     * 
+     * @param string $field
+     * @return boolean
+     */
+    public function isExpandField($field)
+    {
+        $this->setExpandParams();
+        if(! isset($this->_expandParams[$field])){
+            return false;
+        }
+        
+        return true;
     }
 }
