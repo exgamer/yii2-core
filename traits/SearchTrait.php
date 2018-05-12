@@ -64,8 +64,9 @@ trait SearchTrait
             
             return $dataProvider;
         }
-        $this->eagerLoading($query);
+        
         $this->addFilters($query);
+        $this->eagerLoading($query);
 
         return $dataProvider;
     }
@@ -103,6 +104,7 @@ trait SearchTrait
     
     /**
      * Дополнительные условия поиска
+     * 
      * @param \yii\db\ActiveQuery $query
      */
     public function addFilters(&$query)
@@ -270,7 +272,7 @@ trait SearchTrait
     {
         return Inflector::camel2id(StringHelper::basename(get_parent_class()), '_');
     }
-      
+    
     /**
      * Устанавливает массив элементов из параметра expand запроса
      */

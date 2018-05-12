@@ -18,9 +18,9 @@ trait ActiveQueryPropsTrait
      */
     protected function setModelProperties()
     {
-        if(! $this->asArray) {
-            return;
-        }
+//        if(! $this->asArray) {
+//            return;
+//        }
         if(! method_exists($this, 'getModelInstance')) {
             return;
         }
@@ -98,4 +98,3 @@ trait ActiveQueryPropsTrait
         return [$tableName, $alias];
     }
 }
-

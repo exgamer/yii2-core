@@ -2,6 +2,10 @@
 
 namespace core\models\v2\properties\column;
 
+use \yii\helpers\Json;
+use \yii\db\ColumnSchema;
+use \core\helpers\StringHelper;
+
 /**
  * Трейт для AR модель с дополнительными свойствами, которые хранятся в дополнительной
  * колонке в формате JSON (колонка jsonb)
@@ -50,6 +54,33 @@ trait ActiveRecordWithColumnPropsTrait
             $this->properties()
         );
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public static function populateRecord($record, $row)
+    {
+        $schemaColumn = static::getTableSchema()->columns;
+        $properties = array_flip(static::properties());
+        $columns = array_merge($schemaColumn, $properties);
+        $propertiesColumn = static::propertiesColumn();
+        foreach ($row as $name => $value) {
+            if (! isset($columns[$name])) {
+                continue;
+            }
+            if( $columns[$name] instanceof ColumnSchema ) {
+                $record->{$name} = $columns[$name]->phpTypecast($value);
+            } else {
+                $record->{$name} = $columns[$name];
+            }
+            if($name !== $propertiesColumn) {
+                continue;
+            }
+            if( StringHelper::isJson( $record->{$name} ) ) {
+                $record->{$name} = Json::decode($record->{$name});
+            }
+        }
+    }
      
     /**
      * Получение значения свойства
@@ -82,4 +113,3 @@ trait ActiveRecordWithColumnPropsTrait
         $this->{$name} = $value;
     }
 }
-
