@@ -59,28 +59,15 @@ trait ActiveRecordWithColumnPropsTrait
      * @inheritdoc
      */
     public static function populateRecord($record, $row)
-    {
-        $schemaColumn = static::getTableSchema()->columns;
-        $properties = array_flip(static::properties());
-        $columns = array_merge($schemaColumn, $properties);
-        $propertiesColumn = static::propertiesColumn();
-        foreach ($row as $name => $value) {
-            if (! isset($columns[$name])) {
-                continue;
-            }
-            if( $columns[$name] instanceof ColumnSchema ) {
-                $record->{$name} = $columns[$name]->phpTypecast($value);
-            } else {
-                $record->{$name} = $columns[$name];
-            }
-            if($name !== $propertiesColumn) {
-                continue;
-            }
-            if( StringHelper::isJson( $record->{$name} ) ) {
-                $record->{$name} = Json::decode($record->{$name});
-            }
-        }
-    }
+   {
+       $propertiesColumn = static::propertiesColumn();
+       if (isset($row[$propertiesColumn]) && StringHelper::isJson($row[$propertiesColumn])) {
+           $record->{$propertiesColumn} = Json::decode($row[$propertiesColumn]);
+           unset($row[$propertiesColumn]);
+       }
+
+       parent::populateRecord($record, $row);
+   }
      
     /**
      * Получение значения свойства
