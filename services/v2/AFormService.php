@@ -88,10 +88,11 @@ abstract class AFormService extends AService
      * @param string $attribute имя атрибута
      * @param string $value значение
      * @param string $history_attribute название атрибута для хранения истории
+     * @param array  $extAttrs доп атрибуты которые нужно записать в историю
      * 
      * @return boolean
      */
-    public function setAttributeWithHistory($model , $attribute, $value, $history_attribute = null)
+    public function setAttributeWithHistory($model , $attribute, $value, $history_attribute = null, $extAttrs = [])
     {
         if (! $history_attribute){
             $history_attribute = $attribute.'_change_history';
@@ -101,6 +102,11 @@ abstract class AFormService extends AService
                 'to' => $value,
                 'date' => date('Y-m-d H:i:s')
         ];
+        if (! empty($extAttrs) && is_array($extAttrs)){
+            foreach ($extAttrs as $attr) {
+                $history[$attr] = $model->{$attr};
+            }
+        }
         if (isset(Yii::$app->user)){
             $history['person_id'] = Yii::$app->user->identity->id;
         }
