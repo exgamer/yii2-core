@@ -2,10 +2,12 @@
 namespace core\services\v2;
 
 use Yii;
-use core\services\v2\AService;
-use core\forms\v2\AModel;
 use yii\base\Exception;
 use yii\helpers\Json;
+use yii\db\ActiveRecord;
+use core\services\v2\AService;
+use core\forms\v2\AModel;
+use core\forms\v2\ChangeStatusForm;
 
 /**
  * Базовый Service для моделей связанных с формами
@@ -46,22 +48,58 @@ abstract class AFormService extends AService
         
         return $model;
     }
-    
+
     /**
-     * смена статуса
-     * @param AR $model
+     * Смена статуса
+     * 
+     * @param ChangeStatusForm $form
+     * @param ActiveRecord $model
+     * @return ActiveRecord
+     * @throws Exception
      */
-    public function changeStatus($model, $status)
+    public function changeStatus(ChangeStatusForm $form, ActiveRecord $model)
     {
-        if ($model->{$this->modelStatusFieldName} == $status){
+        if(! $model->hasAttribute($this->modelStatusFieldName)) {
             throw new Exception(
-                    Yii::t('service','Объект уже в состоянии ').$status
+                    Yii::t('service','Свойство {property} не определено.' , [
+                        'property' => $this->modelStatusFieldName
+                    ])
             );
         }
-        $this->beforeChangeState($model , $status);
-        $model->{$this->modelStatusFieldName} = $status;
+        if ($model->{$this->modelStatusFieldName} == $form->status){
+            throw new Exception(
+                    //TODO расшифровка статуса - метка
+                    Yii::t('service','Объект уже в состоянии {status}' , [
+                        'status' => $form->status
+                    ])
+            );
+        }
+        $this->beforeChangeState($form , $model);
+        $model->{$this->modelStatusFieldName} = $form->status;
         $this->saveModel($model,false);
-        $this->afterChangeState($model , $status);
+        $this->afterChangeState($form , $model);
+        
+        return $model;
+    }
+    
+    /**
+     * Возвращет новый экзэмплярформы смены статуса, заполняет переданные
+     * в функцию параметры
+     * 
+     * @param integer $status
+     * @param integer $reason_id
+     * @param string $comment
+     */
+    public function getChangeStatusFormInstance($status, $reason_id = null, $comment = null)
+    {
+        $model = new ChangeStatusForm();
+        $model->status = $status;
+        if($reason_id) {
+            $model->reason_id = $reason_id;
+        }
+        if($comment) {
+            $model->$comment = $comment;
+        }
         
         return $model;
     }
@@ -103,17 +141,17 @@ abstract class AFormService extends AService
                 'date' => date('Y-m-d H:i:s')
         ];
         if (! empty($extAttrs) && is_array($extAttrs)){
-            foreach ($extAttrs as $attr) {
-                $history[$attr] = $model->{$attr};
+            foreach ($extAttrs as $attr => $value) {
+                $history[$attr] = $value;
             }
         }
-        if (isset(Yii::$app->user)){
+        if ( Yii::$app->has('user') &&  Yii::$app->user->identity){
             $history['person_id'] = Yii::$app->user->identity->id;
         }
         if ($model->{$history_attribute}){
-            $model->{$history_attribute} = array_merge($model->{$history_attribute}, [$history]);
+            $model->{$history_attribute} = array_merge($model->{$history_attribute}, [ $history ]);
         }else{
-            $model->{$history_attribute} = [$history];
+            $model->{$history_attribute} = [ $history ];
         }
         $model->{$attribute} = $value;
         
@@ -161,17 +199,17 @@ abstract class AFormService extends AService
     
     /**
      * Дополнительные действия перед сменой статуса
+     * @param Model $form
      * @param ActiveRecord $model
-     * @param integer $status
      */
-    protected function beforeChangeState($model , $status){}
+    protected function beforeChangeState($form, $model){}
     
     /**
      * Дополнительные действия после смены статуса
+     * @param Model $form
      * @param ActiveRecord $model
-     * @param integer $status
      */
-    protected function afterChangeState($model, $status){}
+    protected function afterChangeState($form, $model){}
     
     /**
      * Дополнительные действия с моделью перед сохранением
