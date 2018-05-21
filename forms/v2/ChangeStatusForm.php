@@ -9,7 +9,7 @@ use \yii\base\Model;
  * Форма смены статуса
  * 
  * @property integer $status    - статус
- * @property integer $reason_id - причина смены статуса
+ * @property integer $reason_id - причина смены статуса (0 означает что вводится кастомная причина - $comment)
  * @property string $comment    - комментарий
  * 
  * @author Kamaelkz <kamaelkz@yandex.kz>
@@ -73,4 +73,3 @@ class ChangeStatusForm extends Model
         ];
     }
 }
-
