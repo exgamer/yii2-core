@@ -12,6 +12,7 @@ use yii\base\InvalidParamException;
  * 
  * @property curl $connection  - соединение
  * @property string $url       - адрес
+ * @property array $urlExtra       - дополнительные параметры адреса
  * @property array $query       - адресгет параметры для запроса
  * @property string $method    - GET POST и т.д. кароче метод запроса
  * @property string $contentType - тип контента 
@@ -26,6 +27,7 @@ abstract class ABaseCommunicator  extends Component
 {
     protected $connection;
     protected $url;
+    protected $urlExtra = [];
     protected $query = [];
     protected $urlIDParam;
     protected $method = 'GET';
@@ -57,12 +59,12 @@ abstract class ABaseCommunicator  extends Component
         }
         // установка параметров запроса
         if(isset($_GET['backend_debug'])){
-            echo $this->url.$this->getUrlIDParam().$this->getQuery() . PHP_EOL;
+            echo $this->url . $this->getUrlIDParam() . $this->getUrlExtra() . $this->getQuery() . PHP_EOL;
         }
         $options = array(
-          CURLOPT_URL => $this->url.$this->getUrlIDParam().$this->getQuery(),
+          CURLOPT_URL => $this->url . $this->getUrlIDParam(). $this->getUrlExtra() . $this->getQuery(),
           CURLOPT_CUSTOMREQUEST => $this->method, // GET POST PUT PATCH DELETE HEAD OPTIONS
-          CURLOPT_POSTFIELDS => $this->postfields?json_encode($this->postfields):null ,
+          CURLOPT_POSTFIELDS => $this->postfields ? json_encode($this->postfields) : null ,
           CURLOPT_HTTPHEADER => $this->getHeaders(),
           CURLOPT_SSL_VERIFYHOST => 0,
           CURLOPT_SSL_VERIFYPEER => 0,
@@ -239,6 +241,53 @@ abstract class ABaseCommunicator  extends Component
     public function getUrlIDParam()
     {
         return $this->urlIDParam?'/'.$this->urlIDParam:null;
+    }
+    
+    /**
+     * Получение дополнительных параметров адреса
+     * 
+     * @return string
+     */
+    public function getUrlExtra()
+    {
+        $result = null;
+        if(! $this->urlExtra || ! is_array($this->urlExtra)) {
+            return $result;
+        }
+        foreach ($this->urlExtra as $param =>  $value) {
+            $result .= "/{$param}/{$value}";
+        }
+        
+        return $result;
+    }
+
+    /**
+     * Добавление дополнительны параметров к адресу 
+     * для поддержки формата objects/A1
+     * 
+     * @param array $params
+     */
+    public function addUrlExtra(array $params)
+    {
+        $this->urlExtra = array_merge($this->urlExtra, $params);
+    }
+    
+    /**
+     * Удаление дополнительного параметра адреса
+     * 
+     * @param string|null $key
+     */
+    public function removeUrlExtra($key = null)
+    {
+        if(! $key) {
+            $this->urlExtra = [];
+            
+            return;
+        }
+        if(! isset($this->urlExtra[$key])) {
+            return;
+        }
+        unset($this->urlExtra[$key]);
     }
 }
 
