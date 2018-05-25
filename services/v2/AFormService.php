@@ -36,7 +36,13 @@ abstract class AFormService extends AService
         #флаг для понимания операции создания/редактирования
         $is_new_record = $model->isNewRecord;
         #заполнениe атрибутов
-        $model->load($form->attributes, '');
+        $data = $form->attributes;
+        if($model !== null) {
+            #исключение атрибутов первичного ключа
+            $pk = $model::primaryKey();
+            $data = array_diff_key($data, array_flip($pk));
+        }
+        $model->load($data, '');
         $this->beforeModelSave($form, $model, $is_new_record);
         if (! $model->save()) {
             $form->addErrors($model->getErrors());
