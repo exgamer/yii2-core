@@ -47,6 +47,12 @@ trait RemoteBaseActiveQueryTrait
     protected $doubleSearch = false;
     
     /**
+     * разделитель для составных ключей
+     * @var string 
+     */
+    protected $indexKeySeparator = "(*)";
+    
+    /**
      * Делаем различные неприличные вещи перед запросом
      */
     public function beforeQuery()
@@ -418,8 +424,11 @@ trait RemoteBaseActiveQueryTrait
      * @param type $row
      * @return type
      */
-    protected function getIndexKeyByPrimary($model, $row, $separator='-')
+    protected function getIndexKeyByPrimary($model, $row, $separator = null)
     {
+            if (! $separator){
+                $separator = $this->indexKeySeparator;
+            }
             $key = null;
             $primaryKeys = $model::primaryKey();
             foreach ($primaryKeys as $primaryKey) {
@@ -457,7 +466,7 @@ trait RemoteBaseActiveQueryTrait
             #собираем запрос с параметрами по составному первичному ключу
             $keyDataArray=[];
             foreach ($ids as $id) {
-                $keyVals = explode('-', $id);
+                $keyVals = explode($this->indexKeySeparator, $id);
                 foreach ($keyVals as $key =>$value) {
                     $keyDataArray[$key][]=$value;
                 }
