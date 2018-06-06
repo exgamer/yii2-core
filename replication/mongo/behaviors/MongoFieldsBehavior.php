@@ -28,7 +28,9 @@ class MongoFieldsBehavior extends Behavior
         return [
             ActiveRecord::EVENT_BEFORE_INSERT => 'setDate',
             ActiveRecord::EVENT_BEFORE_UPDATE => 'setDate',
-            ActiveRecord::EVENT_AFTER_FIND => 'getDate'
+            ActiveRecord::EVENT_AFTER_FIND => 'getDate',
+            ActiveRecord::EVENT_AFTER_INSERT => 'getDate',
+            ActiveRecord::EVENT_AFTER_UPDATE => 'getDate',
         ];
     }
 
