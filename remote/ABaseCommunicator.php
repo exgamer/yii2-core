@@ -36,7 +36,7 @@ abstract class ABaseCommunicator  extends Component
     protected $option_defaults = array(
         CURLOPT_HEADER => false,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 5
+        CURLOPT_TIMEOUT => 20
     ); 
     protected $success_http_codes = array(
         200,
