@@ -30,6 +30,27 @@ trait SearchTrait
     private $_expandParams = [];
 
     /**
+     * Поиск одной записи
+     * 
+     * @param ActiveQuery $query
+     * @param @param array $params - параметры фильтрации
+     * @return ActiveRecord || null
+     */
+    public function searchOne($query, $params)
+    {
+        $this->scenario = ActiveRecord::SCENARIO_SEARCH;
+        $this->load($params);
+        if (! $this->validate()) {
+            return $this->getErrors();
+        }
+        // Применяем фильтр к запросу
+        $this->addFilters($query);
+        $this->eagerLoading($query);
+        
+        return $query->one();
+    }
+    
+    /**
      * Общий метод получения отфильтрованных данных
      * @param array $params - параметры фильтрации
      *
