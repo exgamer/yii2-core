@@ -186,6 +186,8 @@ trait QuerySearchSetTrait
      * $query->setJsonbCondition($this, ['key_1','key_2','final_key']);
      * поиск с 1 вложенностью
      * $query->setJsonbCondition($this, 'final_key');
+     * поиск по IN
+     * $query->setJsonbCondition($this, 'group_id', false, "IN");
      * 
      * @param ActiveRecord $model
      * @param string||string[] $attr
