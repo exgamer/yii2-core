@@ -146,11 +146,33 @@ trait SearchTrait
             return;
         }
         foreach($extraFields as $filed) {
-            if(! $this->isExpandField($filed)) {
+            if(! $this->isExpandField($filed) || ! $this->checkRelation($filed)) {
                 continue;
             }
             $query->with($filed);
         }
+    }
+    
+    /**
+     * Проверка на существования релейшина
+     * 
+     * @param string $expand
+     * @return boolean
+     */
+    private function checkRelation($expand)
+    {
+        $method = "get{$expand}";
+        #существование метода
+        if(! method_exists($this, $method)){
+            return false;
+        }
+        $result = $this->{$method}();
+        #экземпляр ActiveQuery
+        if(! $result instanceof ActiveQuery){
+            return false;
+        }
+        
+        return true;
     }
     
     /**
