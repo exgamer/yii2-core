@@ -244,11 +244,27 @@ trait QuerySearchSetTrait
             if ($lower){
                 $model->{$attr} = mb_strtolower($model->{$attr});
             }
-            return [
-                'condition' => "{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}",
-                'params' => [
+            if ($operator == "IN") {
+                if (!is_array($model->{$attr})){
+                    $model->{$attr} = [$model->{$attr}];
+                }
+                $inConditionElements = "";
+                foreach ($model->{$attr} as $elem) {
+                    $inConditionElements.="'".$elem."',";
+                }
+                $inConditionElements = trim($inConditionElements, ',');
+                $condition = "{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} ({$inConditionElements})";
+                $params = [];
+            }else{
+                $condition = "{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}";
+                $params = [
                     ":{$attr}" => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
-                ]
+                ];
+            }
+            
+            return [
+                'condition' => $condition,
+                'params' => $params
             ];
         }
         
