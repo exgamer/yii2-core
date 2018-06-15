@@ -51,7 +51,8 @@ class ConstHelper
     const STATUS_REPLACED=11;
     #переназначение
     const STATUS_REMAPPED=12;
-    
+    #ошибка
+    const STATUS_ERROR=13;
 
     #номер мобильного телефона
     const TYPE_MOBILE_PHONE = 'mobile_phone';
