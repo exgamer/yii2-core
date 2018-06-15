@@ -3,8 +3,8 @@
 namespace core\models\v2\properties\column;
 
 use \yii\helpers\Json;
-use \yii\db\ColumnSchema;
 use \core\helpers\StringHelper;
+use \core\interfaces\IBaseSearch;
 
 /**
  * Трейт для AR модель с дополнительными свойствами, которые хранятся в дополнительной
@@ -38,7 +38,11 @@ trait ActiveRecordWithColumnPropsTrait
     public function __set($name, $value)
     {
         if (in_array($name, static::properties())) {
-            $this->setProperty($name, $value);
+            if($this instanceof IBaseSearch) {
+                $this->{$name} = $value;
+            } else {
+                $this->setProperty($name, $value);
+            }
         } else {
             parent::__set($name, $value);
         }
