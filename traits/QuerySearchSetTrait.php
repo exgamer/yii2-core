@@ -176,7 +176,7 @@ trait QuerySearchSetTrait
         if($like) {
             $operator = 'like';
         }
-        $this->setJsonbCondition($model, $language, $lower, $operator, $attr);
+        $this->setJsonbCondition($this, [$attr,$language], $lower, $operator, 'properties', $model->$attr);
     }
     
     /**
@@ -193,10 +193,11 @@ trait QuerySearchSetTrait
      * @param string||string[] $attr
      * @param string $operator
      * @param string $jsonbFieldName
+     * @param mixed $value значение для подстановки
      */
-    public function setJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties')
+    public function setJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties', $value = null)
     {
-        $condition = $this->getJsonbCondition($model, $attrs, $lower, $operator, $jsonbFieldName);
+        $condition = $this->getJsonbCondition($model, $attrs, $lower, $operator, $jsonbFieldName, $value);
         if (! $condition){
             return;
         }
@@ -210,9 +211,10 @@ trait QuerySearchSetTrait
      * @param string||string[] $attr
      * @param string $operator
      * @param string $jsonbFieldName
+     * @param mixed $value значение для подстановки
      * @return array||null
      */
-    public function getJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties')
+    public function getJsonbCondition($model, $attrs, $lower = false, $operator = '=', $jsonbFieldName = 'properties', $value = null)
     {
         $tableName = $model::tableName();
         $fn = null;
@@ -238,20 +240,37 @@ trait QuerySearchSetTrait
             }
             $i++;
         }
-        #если у модели нет аттрибута значит заменяем его на имя поля
-        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
-            $attr = $jsonbFieldName;
+        
+        if ($value){
+            return $this->createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $value);
         }
+        
+//        #если у модели нет аттрибута значит заменяем его на имя поля
+//        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
+//            $attr = $jsonbFieldName;
+//        }
+        
         if ($model->{$attr} !== null){
+            return $this->createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $model->{$attr});
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Собираем условие для поиска 
+     */
+    public function createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $value)
+    {
             if ($lower){
-                $model->{$attr} = mb_strtolower($model->{$attr});
+                $value = mb_strtolower($value);
             }
             if ($operator == "IN") {
-                if (!is_array($model->{$attr})){
-                    $model->{$attr} = [$model->{$attr}];
+                if (!is_array($value)){
+                    $value = [$value];
                 }
                 $inConditionElements = "";
-                foreach ($model->{$attr} as $elem) {
+                foreach ($value as $elem) {
                     $inConditionElements.="'".$elem."',";
                 }
                 $inConditionElements = trim($inConditionElements, ',');
@@ -260,7 +279,7 @@ trait QuerySearchSetTrait
             }else{
                 $condition = "{$fn}({$tableName}.{$jsonbFieldName} {$jsonPath}) {$operator} :{$attr}";
                 $params = [
-                    ":{$attr}" => $operator == 'like'?'%'.$model->{$attr}.'%':$model->{$attr}
+                    ":{$attr}" => $operator == 'like'?'%'.$value.'%':$value
                 ];
             }
             
@@ -268,8 +287,5 @@ trait QuerySearchSetTrait
                 'condition' => $condition,
                 'params' => $params
             ];
-        }
-        
-        return null;
     }
 }
