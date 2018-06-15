@@ -176,7 +176,7 @@ trait QuerySearchSetTrait
         if($like) {
             $operator = 'like';
         }
-        $this->setJsonbCondition($this, [$attr,$language], $lower, $operator, 'properties', $model->$attr);
+        $this->setJsonbCondition($model, [$attr,$language], $lower, $operator, 'properties', $model->$attr);
     }
     
     /**
@@ -188,6 +188,8 @@ trait QuerySearchSetTrait
      * $query->setJsonbCondition($this, 'final_key');
      * поиск по IN
      * $query->setJsonbCondition($this, 'group_id', false, "IN");
+     * поиск с использованием $value
+     * $query->setJsonbCondition($this, ['someprop','caption','ru'], false, '=', 'properties', 'название');
      * 
      * @param ActiveRecord $model
      * @param string||string[] $attr
