@@ -171,6 +171,13 @@ trait QuerySearchSetTrait
      */
     public function compareByLanguage($model, $attr, $lower = true, $like = true)
     {
+        if (! $model instanceof \core\models\v2\properties\column\IARWithColumnProps){
+            $this->byLanguage($model, $attr, $lower, $like);
+            return;
+        }
+        if (! $model->$attr){
+            return;
+        }
         $language = Yii::$app->language;
         $operator = '=';
         if($like) {
@@ -178,6 +185,28 @@ trait QuerySearchSetTrait
         }
         $this->setJsonbCondition($model, [$attr,$language], $lower, $operator, 'properties', $model->$attr);
     }
+    
+
+    /**
+     * Добавляет условие для посика по обычным полям по языку (не properties)
+     */
+    public function byLanguage($model, $attr, $lower = true, $like = true)
+    {
+        $tableName = $model::tableName();
+        $language = Yii::$app->language;
+        $fn = null;
+        if($lower) {
+            $fn = 'lower';
+        }
+        $operator = '=';
+        if($like) {
+            $operator = 'like';
+        }
+        $this->andWhere("{$fn}({$tableName}.{$attr} ->> '{$language}') {$operator} {$fn}(:PARAM)", [
+                ':PARAM' => "%{$model->$attr}%"
+        ]);
+    }
+    
     
     /**
      * Добавить в запрос поиск по jsonb полю
@@ -248,9 +277,9 @@ trait QuerySearchSetTrait
         }
         
 //        #если у модели нет аттрибута значит заменяем его на имя поля
-        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
-            $attr = $jsonbFieldName;
-        }
+//        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
+//            $attr = $jsonbFieldName;
+//        }
         
         if ($model->{$attr} !== null){
             return $this->createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $model->{$attr});
