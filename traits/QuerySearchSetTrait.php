@@ -248,9 +248,9 @@ trait QuerySearchSetTrait
         }
         
 //        #если у модели нет аттрибута значит заменяем его на имя поля
-//        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
-//            $attr = $jsonbFieldName;
-//        }
+        if (! property_exists($model, $attr) && $jsonbFieldName !== 'properties'){
+            $attr = $jsonbFieldName;
+        }
         
         if ($model->{$attr} !== null){
             return $this->createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $model->{$attr});
