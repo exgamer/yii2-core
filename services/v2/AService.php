@@ -65,28 +65,34 @@ abstract class AService extends Component
     }
     
     /**
-     * Возвращает модель по условию
-     * 
-     * @param array $condition
-     * @param array $with
-     * @param array $config
-     * 
-     * @return ActiveRecord
-     */
-    public function getItem($params = [], $config = [])
-    {
-        $class = $this->_class;
-        $query = $class::find();
-        if(isset($config['with']) && !empty($config['with'])) {
-            $query->with($config['with']);
-        }
-        $query->where($params);
-        if(isset($config['asArray'])) {
-            $query->asArray();
-        }
-        
-        return $query->one();
-    }
+    * Возвращает модель по условию
+    *
+    * @param array $condition
+    * @param array $with
+    * @param array $config
+    *
+    * @return ActiveRecord
+    */
+   public function getItem($params = [], $config = [])
+   {
+       $class = $this->_class;
+       $q = $class::find();
+       if(isset($config['with']) && !empty($config['with'])) {
+           $q->with($config['with']);
+       }
+       $q->where($params);
+       if(isset($config['asArray'])) {
+           $q->asArray();
+       }
+       if(isset($config['select'])) {
+           $q->select($config['select']);
+       }
+       if(isset($config['orderBy'])) {
+           $q->orderBy($config['orderBy']);
+       }
+       
+       return $q->one();
+   }
 
     /**
      * Возвращает список по настройкам
