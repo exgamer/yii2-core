@@ -173,7 +173,7 @@ trait QuerySearchSetTrait
     {
         if (method_exists($model, 'properties')){
             $props = $model::properties();
-            if (! isset($props[$attr])){
+            if (! in_array($attr, $props)){
                 $this->byLanguage($model, $attr, $lower, $like);
                 return;
             }
