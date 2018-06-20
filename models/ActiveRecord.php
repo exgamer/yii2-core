@@ -121,6 +121,11 @@ class ActiveRecord extends \yii\db\ActiveRecord implements Filterable
         return 'core\queries\BaseActiveQuery';
     }
     
+    public function validate($attributeNames = null, $clearErrors = true)
+    {
+        return parent::validate($attributeNames, false);
+    }
+    
     /**
      * Проверяем на наличие стандартных колонок и записываем значения по дефолту
      * @param bool $insert
