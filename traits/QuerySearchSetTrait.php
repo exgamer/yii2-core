@@ -171,9 +171,12 @@ trait QuerySearchSetTrait
      */
     public function compareByLanguage($model, $attr, $lower = true, $like = true)
     {
-        if (! $model instanceof \core\models\v2\properties\column\IARWithColumnProps){
-            $this->byLanguage($model, $attr, $lower, $like);
-            return;
+        if (method_exists($model, 'properties')){
+            $props = $model::properties();
+            if (! isset($props[$attr])){
+                $this->byLanguage($model, $attr, $lower, $like);
+                return;
+            }
         }
         if (! $model->$attr){
             return;
