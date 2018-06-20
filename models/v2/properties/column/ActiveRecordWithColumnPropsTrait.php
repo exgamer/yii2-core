@@ -101,6 +101,5 @@ trait ActiveRecordWithColumnPropsTrait
         } 
         $items[$name] = $value;
         $this->{$column} = $items;
-        $this->{$name} = $value;
     }
 }
