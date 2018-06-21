@@ -171,12 +171,16 @@ trait QuerySearchSetTrait
      */
     public function compareByLanguage($model, $attr, $lower = true, $like = true)
     {
+        $real = true;
         if (method_exists($model, 'properties')){
             $props = $model::properties();
-            if (! in_array($attr, $props)){
+            if (in_array($attr, $props)){
+                $real = false;
+            }
+        }
+        if ($real){
                 $this->byLanguage($model, $attr, $lower, $like);
                 return;
-            }
         }
         if (! $model->$attr){
             return;
