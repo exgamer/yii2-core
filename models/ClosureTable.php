@@ -148,13 +148,21 @@ abstract class ClosureTable extends ActiveRecord
      * 
      * @param integer $target_id
      */
-    protected function move($target_id)
+    public function move($target_id)
     {
         $sql = "
-           DELETE a FROM {$this->_treeTableName} a
-           JOIN {$this->_treeTableName} d ON a.id_child = d.id_child
-           LEFT JOIN {$this->_treeTableName} x ON x.id_parent = d.id_parent AND x.id_child = a.id_parent
-           WHERE d.id_parent = :ID and x.id_parent IS NULL
+            WITH tree AS (
+                SELECT a.id_parent as parent_id, a.id_child as child_id, a.level as l  
+                FROM {$this->_treeTableName} a 
+                JOIN {$this->_treeTableName} d ON a.id_child = d.id_child
+                LEFT JOIN {$this->_treeTableName} x ON x.id_parent = d.id_parent AND x.id_child = a.id_parent
+                WHERE d.id_parent = :ID and x.id_parent IS NULL
+            )
+            DELETE FROM {$this->_treeTableName} as A
+            USING tree as B
+            WHERE A.id_parent = B.parent_id 
+            AND A.id_child = B.child_id
+            AND A.level = B.l
         ";
            
         $command = static::getDb()->createCommand($sql);
@@ -163,11 +171,12 @@ abstract class ClosureTable extends ActiveRecord
 
         $sql = "
             INSERT INTO {$this->_treeTableName} (id_parent,id_child , level)
-            SELECT a.id_parent, b.id_child , a.level + b.level + 1
-            FROM {$this->_treeTableName} a
-            JOIN {$this->_treeTableName} b
-            WHERE b.id_parent = :ID
-            AND a.id_child = :IDTARGER
+            (
+                SELECT a.id_parent, b.id_child , (a.level + b.level + 1)
+                FROM {$this->_treeTableName} a
+                JOIN {$this->_treeTableName} b
+                ON b.id_parent = :ID AND a.id_child = :IDTARGER
+            )
         ";
 
         $command = static::getDb()->createCommand($sql);
