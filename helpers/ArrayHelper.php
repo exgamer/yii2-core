@@ -108,6 +108,25 @@ class ArrayHelper extends BaseArrayHelper
             return [$object];
         }
     }
+     
+    /**
+     * Возвращает исходный массив без пустых значений
+     * 
+     * @param array $array
+     * @return array
+     */
+    public static function getClearEmpty(array &$array)
+    {
+        $array =  array_filter($array, function($v) {
+            if(! $v) {
+                return null;
+            }
+
+            return $v;
+        });
+        
+        return $array;
+    }
     
     /**
      * Возвращает массив элементов имеющих пустые значения
