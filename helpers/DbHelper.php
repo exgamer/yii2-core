@@ -22,7 +22,8 @@ class DbHelper
      * @var array
      */
     public static $dataMap;
-    
+    protected static $errors = [];
+
     /**
      * ! Важно! если хотя бы в одной записи значение будет null поле для всех записей не будет в запросе
      * @param BaseActiveRecord model
@@ -64,6 +65,7 @@ class DbHelper
                     $validationModel->attributes =  $attrs;
                     $validationModel->scenario = ActiveRecord::SCENARIO_INSERT;
                     if (! $validationModel->validate()){
+                        self::setError($validationModel->getErrors());
                         //print_r($validationModel->getErrors());
                         continue;
                     }
@@ -112,6 +114,7 @@ class DbHelper
                 $db->createCommand($sql)->execute();
                 
                 $model->afterBatch(self::$dataMap);
+                self::clearErrors();
                 
                 return true;
         });
@@ -176,6 +179,34 @@ class DbHelper
                 
                 return true;
         });
+    } 
+    
+    /**
+     * Возвращает ошибки
+     * 
+     * @return array
+     */
+    public static function getErrors()
+    {
+        return self::$errors;
+    }
+    
+    /**
+     * Установка ошибки
+     * 
+     * @param mixed $v
+     */
+    public static function setError($v)
+    {
+        self::$errors[] = $v;
+    }
+    
+    /**
+     * Очистка ошибок
+     */
+    protected static function clearErrors()
+    {
+        self::$errors = [];
     }
     
     /**
