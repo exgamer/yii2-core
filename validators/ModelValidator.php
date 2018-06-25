@@ -7,6 +7,7 @@ use yii\helpers\Json;
 
 /**
  * Универсальный валидатор для возможности валидации массивов данных с помощью моделей
+ * @todo переработать отдачу ошибок
  * @author CitizenZet
  */
 class ModelValidator extends Validator
@@ -39,6 +40,10 @@ class ModelValidator extends Validator
             return true;
         }
         $dataArray = [];
+        if(! is_array($model->{$attribute})) {
+                $this->addError($model, $attribute,  Yii::t('core', 'Значение «{attribute}» должно быть массивом.', ['attribute' => $attribute]));
+                return false;
+        }
         foreach ($model->{$attribute} as $data) {
             $result = $this->validateModel($data);
             if ($result == false){
