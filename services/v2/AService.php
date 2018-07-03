@@ -77,19 +77,7 @@ abstract class AService extends Component
    {
        $class = $this->_class;
        $q = $class::find();
-       if(isset($config['with']) && !empty($config['with'])) {
-           $q->with($config['with']);
-       }
-       $q->where($params);
-       if(isset($config['asArray'])) {
-           $q->asArray();
-       }
-       if(isset($config['select'])) {
-           $q->select($config['select']);
-       }
-       if(isset($config['orderBy'])) {
-           $q->orderBy($config['orderBy']);
-       }
+       $this->applyQueryCriteria($q, $params, $config);
        
        return $q->one();
    }
@@ -104,26 +92,40 @@ abstract class AService extends Component
     {
         $class = $this->_class;
         $q = $class::find();
-        if(isset($config['select'])) {
-            $q->select($config['select']);
-        }
-        $q->andWhere($params);
-        if(isset($config['with']) && !empty($config['with'])) {
-            $q->with($config['with']);
-        }
-        if(isset($config['asArray'])) {
-            $q->asArray();
-        }
-        if(isset($config['orderBy'])) {
-            $q->orderBy($config['orderBy']);
-        }
-        if(isset($config['indexBy'])) {
-            $q->indexBy($config['indexBy']);
-        }
+        $this->applyQueryCriteria($q, $params, $config);
         
         return $q->all();
     }
-       
+    
+    /**
+     * Применение конфига к запросу
+     * 
+     * @param ActiveQuery $query
+     * @param array $params
+     * @param array $config
+     */
+    private function applyQueryCriteria(&$query, $params, $config)
+    {
+        if($params) {
+             $query->andWhere($params);
+        }
+        if(isset($config['select'])) {
+            $query->select($config['select']);
+        }
+        if(isset($config['with']) && !empty($config['with'])) {
+            $query->with($config['with']);
+        }
+        if(isset($config['asArray'])) {
+            $query->asArray();
+        }
+        if(isset($config['orderBy'])) {
+            $query->orderBy($config['orderBy']);
+        }
+        if(isset($config['indexBy'])) {
+            $query->indexBy($config['indexBy']);
+        }
+    }
+
     /**
      * Сохранение модели
      * 
