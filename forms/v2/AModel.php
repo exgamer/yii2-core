@@ -24,6 +24,22 @@ abstract class AModel extends Model implements IHaveService
     protected $transactionalSave = true;
     
     /**
+     * По умолчанию возвращаем правила модели
+     */
+    public function rules()
+    {
+        $service = static::getBaseService();
+        if(! $service){
+            throw new ServerErrorHttpException(
+                    Yii::t('api', 'Не выставлен основной сервис для работы с моделью.')
+            );
+        }
+        $modelClass = $service->getRelatedModelClass();
+        $model = new $modelClass();
+        return $model->rules();
+    }
+    
+    /**
      * @see yii\base\Model
      */
     public function scenarios()
