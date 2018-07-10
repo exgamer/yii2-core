@@ -106,8 +106,38 @@ abstract class AService extends Component
      */
     private function applyQueryCriteria(&$query, $params, $config)
     {
-        if($params) {
-             $query->andWhere($params);
+//        if($params) {
+//             $query->andWhere($params);
+//        }
+        /**
+         * Для возможности использования не только ключ/значение
+         * а еще andWhere('sql' , [params])
+         *  пример
+         *   $events = $this->getItemsAsArray([
+         *                                           'event_profile_id' => $model->event_profile_id,
+         *                                           'weekday' => $model->weekday,
+         *                                           'status' => ConstHelper::STATUS_ACTIVE,
+         *                                           'is_deleted' => 0,
+         *                                           ["string sql condition", [':TIME_START' => $model->time_start]]
+         *   ]);
+         */
+        foreach ($params as $key => $value) {
+            if (is_string($key)){
+                $query->andWhere([$key => $value]);
+            }
+            if (is_integer($key) && is_array($value)){
+                $condition = null;
+                if (isset($value[0])){
+                    $condition = $value[0];
+                }
+                $prms = null;
+                if (isset($value[1]) && is_array($value[1])){
+                    $prms = $value[1];
+                }
+                if ($condition){
+                    $query->andWhere($condition, $prms);
+                }
+            }
         }
         if(isset($config['select'])) {
             $query->select($config['select']);
