@@ -32,7 +32,7 @@ trait MixedRemoteBaseActiveQueryAdditionalTrait
         $this->beforeQuery();
         if ($this->isSearchByRemoteFields()){
             $remoteData = $this->getData();
-            $localData = $this->getLocalData();
+            $localData = empty($remoteData)?[]:$this->getLocalData();
         }else{
             $localData = $this->getLocalData();
             $remoteData = $this->getData();
