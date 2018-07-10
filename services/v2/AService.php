@@ -112,6 +112,7 @@ abstract class AService extends Component
         /**
          * Для возможности использования не только ключ/значение
          * а еще andWhere('sql' , [params])
+         * 
          *  пример
          *   $events = $this->getItemsAsArray([
          *                                           'event_profile_id' => $model->event_profile_id,
