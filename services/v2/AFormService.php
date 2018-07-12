@@ -83,7 +83,7 @@ abstract class AFormService extends AService
         $this->beforeChangeState($form , $model);
         $model->{$this->modelStatusFieldName} = $form->status;
         $this->saveModel($model,false);
-        $this->afterChangeState($form , $model, $previousStatus);
+        $this->afterChangeState($form , $model, $form->status);
         
         return $model;
     }
