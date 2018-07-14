@@ -61,6 +61,7 @@ abstract class AService extends Component
         if (! empty($with)){
             $config['with'] = $with;
         }
+        
         return $this->getItem(["{$this->_tableName}.id" => $id],  $config);
     }
     
@@ -87,6 +88,8 @@ abstract class AService extends Component
      * 
      * @param array $params - condition
      * @param type $config - addditonal settings
+     * 
+     * @return ActiveRecord
      */
     public function getItems($params = [], $config = [])
     {
@@ -95,6 +98,23 @@ abstract class AService extends Component
         $this->applyQueryCriteria($q, $params, $config);
         
         return $q->all();
+    }
+    
+    /**
+     * Кол-во записей
+     * 
+     * @param array $params - condition
+     * @param type $config - addditonal settings
+     * 
+     * @return ActiveRecord
+     */
+    public function count($params = [], $config = [])
+    {
+        $class = $this->_class;
+        $q = $class::find();
+        $this->applyQueryCriteria($q, $params, $config);
+        
+        return $q->count();
     }
     
     /**
