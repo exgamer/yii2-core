@@ -124,7 +124,23 @@ abstract class AService extends Component
          */
         foreach ($params as $key => $value) {
             if (is_string($key)){
-                $query->andWhere([$key => $value]);
+                $modelClass = $query->modelClass;
+                $model = new $modelClass();
+                $model->{$key} = $value;
+                // для поиска по jsobB полям
+                if (method_exists($modelClass,'properties')){
+                    $properties = $modelClass::properties();
+                    if (in_array($key, $properties)){
+                        if (is_array($value)){
+                            $query->setJsonbCondition($model, $key, false, "IN");
+                        }else{
+                            $query->setJsonbCondition($model, $key);
+                        }
+        
+                    }
+                }else{
+                    $query->andWhere([$key => $value]);
+                }
             }
             if (is_integer($key) && is_array($value)){
                 $condition = null;
