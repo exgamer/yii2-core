@@ -147,8 +147,8 @@ abstract class AFormService extends AService
                 'date' => date('Y-m-d H:i:s')
         ];
         if (! empty($extAttrs) && is_array($extAttrs)){
-            foreach ($extAttrs as $attr => $value) {
-                $history[$attr] = $value;
+            foreach ($extAttrs as $attr => $item) {
+                $history[$attr] = $item;
             }
         }
         if ( Yii::$app->has('user') &&  Yii::$app->user->identity){
