@@ -37,7 +37,9 @@ trait ActiveQueryPropsTrait
             return;
         }
         list(, $alias) = $this->getTableNameAndAlias();
-        $this->select = ["{$alias}.*"];
+        if(! $this->select) {
+            $this->select = ["{$alias}.*"];
+        }
         
         if($model instanceof IARWithColumnProps) {
             $this->setColumnProperties( $model::propertiesColumn(), $properties );
