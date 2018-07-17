@@ -4,6 +4,7 @@ namespace core\traits;
 
 use Yii;
 use core\models\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * @todo Эксперементальный режим
@@ -325,5 +326,41 @@ trait QuerySearchSetTrait
                 'condition' => $condition,
                 'params' => $params
             ];
+    }
+    
+    /**
+     * TODO В режиме тестирования
+     * 
+     * Добавляем в запрос поиск по внешнему массиву
+     * 
+     * @param string $compareField - поле по которому ищем
+     * @param [] $searchArray - массив с которым сравниваем
+     * @param [] $searchPath - путь ключей массива
+     * @param string $sign - знак в условии > < =
+     */
+    public function createOuterJsonCondition($compareField, $searchArray, $searchPath, $sign = "=")
+    {
+        $json = \yii\helpers\Json::encode($searchArray);
+        
+        $jsonPath = "";
+        $keyCount = count($searchPath);
+        $i = 1;
+        foreach ($searchPath as $key) {
+            $string = "";
+            if ($key instanceof Expression){
+                $string = $key;
+            }else{
+                $string = "'{$key}'";
+            }
+            if ($i < $keyCount){
+                $jsonPath.=" -> {$string}";
+            }else{
+                $jsonPath.=" ->> {$string}";
+                continue;
+            }
+            $i++;
+        }
+             
+        $this->andWhere("{$compareField} {$sign} '{$json}'::jsonb {$jsonPath}");               
     }
 }
