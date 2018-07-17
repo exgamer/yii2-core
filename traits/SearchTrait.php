@@ -83,7 +83,7 @@ trait SearchTrait
         if (! $this->validate()) {
             $query->where('0 = 1');
             
-            return $dataProvider;
+            return $this;
         }
         
         $this->addFilters($query);
