@@ -17,14 +17,58 @@ use core\models\ActiveRecord;
  */
 trait SearchTrait 
 {
+    /**
+     * Класс дата провайдера
+     * 
+     * @var string
+     */
     public $dataProviderClass = '\yii\data\ActiveDataProvider';
+    
+    /**
+     * Признак вывода данных как массив
+     * 
+     * @var boolean
+     */
     public $asArray = false;
-    private $_per_page = 30;
+    
+    /**
+     * Сортировка по умолчанию DataProvider
+     * 
+     * @var array
+     */
     private $_default_sort = null;
+    
+    /**
+     * Атрибуты для сортировки DataProvider
+     * 
+     * @var array
+     */
     private $_sort_attrbutes = null;
     
     /**
+     * Кол-во элементов на страницу DataProvider
+     * 
+     * @var integer 
+     */
+    private $_per_page = 30;
+    
+    /**
+     * Состояние пагинации
+     * 
+     * @var boolean
+     */
+    private $_pagination_state = true;
+    
+    /**
+     * Состояние отображения ошибок валидации
+     * 
+     * @var boolean
+     */
+    private $_validation_error_state = false;
+
+    /**
      * Массив параметров переданных в параметры запроса expand
+     * 
      * @var array 
      */
     private $_expandParams = [];
@@ -66,11 +110,7 @@ trait SearchTrait
                 'attributes' => $this->getSortAttributes(),
                 'defaultOrder' => $this->getDefaultSort(),
             ],
-            'pagination' => [
-                'pageSize' => $this->getPerPage(),
-                'pageSizeParam' => false,
-                'forcePageParam' => false
-            ],
+            'pagination' => $this->getPagination()
         ];
 //        if ($this->isCashe()){
 //            $this->dataProviderClass = '\core\data\CacheDataProvider';
@@ -81,9 +121,11 @@ trait SearchTrait
         $this->scenario = ActiveRecord::SCENARIO_SEARCH;
         $this->load($params);
         if (! $this->validate()) {
-            $query->where('0 = 1');
-            
-            return $this;
+            if(! $this->_validation_error_state) {
+                $query->where('0 = 1');
+            } else {
+                return $this;
+            }
         }
         
         $this->addFilters($query);
@@ -208,6 +250,26 @@ trait SearchTrait
     }
     
     /**
+     * Установка состояния отображения ошибок валидации
+     * 
+     * @param boolean $state
+     */
+    public function setValidationErrorState($state)
+    {
+        $this->_validation_error_state = (boolean) $state;
+    }
+
+    /**
+     * Установка состояниея пагинации
+     * 
+     * @param boolean $state
+     */
+    public function setPaginationState($state)
+    {
+        $this->_pagination_state = (boolean) $state;
+    }
+    
+    /**
      * Установка кол-ва элементов на страницу
      * @param integer $v
      */
@@ -256,7 +318,24 @@ trait SearchTrait
         
         return ['id' => SORT_DESC];
     }
-
+    
+    /**
+     * Получение настроек пагинации
+     * 
+     * @return boolean|array
+     */
+    private function getPagination()
+    {
+        if(! $this->_pagination_state) {
+            return false;
+        } 
+        return [
+            'pageSize' => $this->getPerPage(),
+            'pageSizeParam' => false,
+            'forcePageParam' => false
+        ];
+    }
+    
     /**
      * Установка атрибутов сортировки
      * @example :
