@@ -144,11 +144,11 @@ abstract class AService extends Component
          */
         foreach ($params as $key => $value) {
             if (is_string($key)){
+                $modelClass = $query->modelClass;
                 // для поиска по jsobB полям
                 if (method_exists($modelClass,'properties')){
                     $properties = $modelClass::properties();
                     if (in_array($key, $properties)){
-                        $modelClass = $query->modelClass;
                         $model = new $modelClass();
                         $model->{$key} = $value;
                         if (is_array($value)){
