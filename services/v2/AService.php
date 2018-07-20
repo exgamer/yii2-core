@@ -156,7 +156,8 @@ abstract class AService extends Component
                         }else{
                             $query->setJsonbCondition($model, $key);
                         }
-        
+                    }else{
+                        $query->andWhere([$key => $value]);
                     }
                 }else{
                     $query->andWhere([$key => $value]);
