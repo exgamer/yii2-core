@@ -80,7 +80,10 @@ abstract class AModel extends Model implements IHaveService
                 }
 
                 return $service->{$method}($this , $model);
-        } catch (Exception $ex){
+        } catch (yii\db\Exception $exc){
+            $this->addServerError("Internal Db Exception");
+            return false;
+        }catch (Exception $ex){
             $this->addServerError($ex->getMessage());
             return false;
         }
