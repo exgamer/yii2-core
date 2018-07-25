@@ -80,10 +80,11 @@ abstract class AFormService extends AService
                     ])
             );
         }
+        $previousStatus = $model->getOldAttribute("status");
         $this->beforeChangeState($form , $model);
         $model->{$this->modelStatusFieldName} = $form->status;
         $this->saveModel($model,false);
-        $this->afterChangeState($form , $model);
+        $this->afterChangeState($form , $model, $previousStatus);
         
         return $model;
     }
@@ -215,7 +216,7 @@ abstract class AFormService extends AService
      * @param Model $form
      * @param ActiveRecord $model
      */
-    protected function afterChangeState($form, $model){}
+    protected function afterChangeState($form, $model, $previousStatus){}
     
     /**
      * Дополнительные действия с моделью перед сохранением
