@@ -3,9 +3,10 @@ namespace core\traits;
 
 use Yii;
 use yii\base\Exception;
-use core\interfaces\IBaseSearch;
+use yii\db\ActiveQuery;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
+use core\interfaces\IBaseSearch;
 use core\models\ActiveRecord;
 
 /**
