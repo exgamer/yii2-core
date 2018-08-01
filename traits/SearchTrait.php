@@ -64,7 +64,7 @@ trait SearchTrait
      * 
      * @var boolean
      */
-    private $_validation_error_state = false;
+    private $_validation_error_state = true;
 
     /**
      * Массив параметров переданных в параметры запроса expand
