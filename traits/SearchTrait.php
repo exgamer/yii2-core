@@ -101,7 +101,7 @@ trait SearchTrait
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $with = [])
     {
         $this->checkModel();
         $query = static::find();
@@ -130,7 +130,11 @@ trait SearchTrait
         }
         
         $this->addFilters($query);
-        $this->eagerLoading($query);
+        if(! $with) {
+            $this->eagerLoading($query);
+        } else {
+            $query->with = $with;
+        }
 
         return $dataProvider;
     }
