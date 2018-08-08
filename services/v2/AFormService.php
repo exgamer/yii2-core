@@ -189,7 +189,7 @@ abstract class AFormService extends AService
      */
     public function undelete($model)
     {
-        if (! $model::checkAttribute(IS_DELETED_FIELD)){
+        if (! in_array(IS_DELETED_FIELD, ($model->attributes()))){
             throw new Exception(
                     Yii::t('service','Метод не поддерживается')
             );
