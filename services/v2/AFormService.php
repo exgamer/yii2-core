@@ -182,6 +182,30 @@ abstract class AFormService extends AService
         
         return true;
     }
+    
+    /**
+     * Восстановить запись
+     * Только для таблиц где есть is_deleted
+     */
+    public function undelete($model)
+    {
+        if (! $model::checkAttribute(IS_DELETED_FIELD)){
+            throw new Exception(
+                    Yii::t('service','Метод не поддерживается')
+            );
+        }
+        $this->beforeUnDelete($model);
+        $model->is_deleted = 0;
+        if (! $model->save()){
+            throw new Exception(
+                    Yii::t('service','Не удалось восстановить модель - {errors}', [
+                        'errors' => Json::encode($model->getErrors())
+                    ])
+            );
+        }
+        
+        return true;
+    }
 
     /**
      * Выставляем полученные примари ключи в форму
@@ -203,6 +227,12 @@ abstract class AFormService extends AService
      * @param ActiveRecord $model
      */
     protected function beforeDelete($model){}
+    
+    /**
+     * Дополнительные действия перед восстановлением
+     * @param ActiveRecord $model
+     */
+    protected function beforeUnDelete($model){}
     
     /**
      * Дополнительные действия перед сменой статуса
