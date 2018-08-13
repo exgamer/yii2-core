@@ -289,7 +289,7 @@ trait QuerySearchSetTrait
 //            $attr = $jsonbFieldName;
 //        }
         
-        if ($model->{$attr} !== null){
+        if ($model->{$attr} !== null && $model->{$attr} != ''){
             return $this->createJsonBCondition($attr, $fn, $tableName, $jsonbFieldName, $jsonPath, $operator, $lower, $model->{$attr});
         }
         
