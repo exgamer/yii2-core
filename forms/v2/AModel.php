@@ -22,6 +22,26 @@ abstract class AModel extends Model implements IHaveService
 
     protected $saveMethodName = 'save';
     protected $transactionalSave = true;
+    /**
+     * Параметр для перезагрузки модели без валидации
+     * Используется в ActiveForm
+     * 
+     * @var string
+     */
+    public static $refreshParam = 'refresh-form';
+    
+    public function validate($attributeNames = null, $clearErrors = true)
+    {
+        if(
+                Yii::$app->request->post(self::refreshParam) 
+                || Yii::$app->request->get(self::refreshParam)
+        ) {
+
+            return false;
+        }
+        
+        return parent::validate($attributeNames, $clearErrors);
+    }
     
     /**
      * По умолчанию возвращаем правила модели

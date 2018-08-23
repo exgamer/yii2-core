@@ -192,6 +192,9 @@ abstract class AService extends Component
         if(isset($config['indexBy'])) {
             $query->indexBy($config['indexBy']);
         }
+        if(isset($config['groupBy'])) {
+            $query->groupBy($config['groupBy']);
+        }
     }
 
     /**
