@@ -4,6 +4,7 @@ namespace core\forms\v2;
 use Yii;
 use yii\base\Exception;
 use yii\base\Model;
+use yii\web\Application;
 use Codeception\Lib\Interfaces\ActiveRecord;
 use yii\web\ServerErrorHttpException;
 use core\models\ActiveRecord as AR;
@@ -33,8 +34,11 @@ abstract class AModel extends Model implements IHaveService
     public function validate($attributeNames = null, $clearErrors = true)
     {
         if(
-                Yii::$app->request->post(static::$refreshParam) 
-                || Yii::$app->request->get(static::$refreshParam)
+                (
+                    Yii::$app->request->post(static::$refreshParam) 
+                    || Yii::$app->request->get(static::$refreshParam)
+                )
+                && Yii::$app instanceof Application
         ) {
 
             return false;
