@@ -34,11 +34,12 @@ abstract class AModel extends Model implements IHaveService
     public function validate($attributeNames = null, $clearErrors = true)
     {
         if(
+                Yii::$app instanceof Application
+                &&
                 (
                     Yii::$app->request->post(static::$refreshParam) 
                     || Yii::$app->request->get(static::$refreshParam)
                 )
-                && Yii::$app instanceof Application
         ) {
 
             return false;
